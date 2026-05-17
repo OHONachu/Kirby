@@ -12,7 +12,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 2. 初始狀態設定為選單 (Start Menu)
     currentState = MENU;
-
+    // --- 初始化卡比的數值 ---
+    // x=100, y=100(在空中), 寬=80, 高=80
+    kirby = QRect(100, 100, 80, 80);
+    velocityY = 0;
+    moveSpeed = 8;       // 卡比走路的速度
+    isMovingLeft = false;
+    isMovingRight = false;
     // 3. 設定遊戲迴圈 (Game Loop)
     gameTimer = new QTimer(this);
     // 將計時器的 timeout 訊號連接到我們的 updateGame 函數
@@ -30,6 +36,28 @@ MainWindow::~MainWindow()
 void MainWindow::updateGame()
 {
     // 呼叫 update() 會觸發下面的 paintEvent 重新畫畫面
+    // 如果進入了 Stage 1，才開始計算物理與移動
+    if (currentState == STAGE1) {
+
+        // --- 1. 左右移動 ---
+        if (isMovingLeft) {
+            kirby.translate(-moveSpeed, 0); // 往左扣 X 座標
+        }
+        if (isMovingRight) {
+            kirby.translate(moveSpeed, 0);  // 往右加 X 座標
+        }
+
+        // --- 2. 地心引力 ---
+        velocityY += 1; // 重力加速度：每 16 毫秒往下掉的速度增加
+        kirby.translate(0, velocityY);
+
+        // --- 3. 地板碰撞偵測 ---
+        // 假設我們的綠色地板在 Y = 800 的位置
+        if (kirby.bottom() >= 800) {
+            kirby.moveBottom(800); // 把卡比強制拉回地板表面
+            velocityY = 0;         // 踩到地板，垂直速度歸零
+        }
+    }
     update();
 }
 
@@ -58,14 +86,43 @@ void MainWindow::paintEvent(QPaintEvent *event)
         // x=0, y=800, 寬度=1620, 高度=280
         QRect ground(0, 800, 1620, 280);
         painter.fillRect(ground, Qt::green);
+        // --- 畫出卡比 (紅色的正方形) ---
+                painter.fillRect(kirby, Qt::red);
     }
 }
 
 // 鍵盤事件：處理玩家的按鍵
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    // 如果現在在 MENU 狀態，且玩家按下了 Enter 鍵 (Qt::Key_Return)
+    // 如果在 Menu 狀態按下 Enter
     if (currentState == MENU && event->key() == Qt::Key_Return) {
-        currentState = STAGE1; // 切換到 Stage 1
+        currentState = STAGE1;
+    }
+
+    // 如果在 Stage 1，處理卡比的操作
+    if (currentState == STAGE1) {
+        if (event->key() == Qt::Key_Left) {
+            isMovingLeft = true;
+        }
+        if (event->key() == Qt::Key_Right) {
+            isMovingRight = true;
+        }
+        // 跳躍邏輯 (按 Up 鍵，且必須踩在地板上才能跳)
+        if (event->key() == Qt::Key_Up && kirby.bottom() == 800) {
+            velocityY = -22; // 給予一個向上的負向速度
+        }
+    }
+}
+
+// 當玩家鬆開鍵盤按鍵時觸發
+void MainWindow::keyReleaseEvent(QKeyEvent *event)
+{
+    if (currentState == STAGE1) {
+        if (event->key() == Qt::Key_Left) {
+            isMovingLeft = false;
+        }
+        if (event->key() == Qt::Key_Right) {
+            isMovingRight = false;
+        }
     }
 }
