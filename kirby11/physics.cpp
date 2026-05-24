@@ -14,6 +14,9 @@ CollisionResult Physics::resolveMovement(QRectF& actorBox, QPointF& velocity,
                                        const QList<QRect>& solids,
                                        const QList<QRect>& platforms,
                                        bool isFlying) {
+    // 消除未使用的參數警告
+    Q_UNUSED(isFlying);
+
     CollisionResult result;
 
     // --- 1. Resolve Horizontal (X-axis) Movement ---
@@ -30,19 +33,17 @@ CollisionResult Physics::resolveMovement(QRectF& actorBox, QPointF& velocity,
                     actorBox.setLeft(solidF.right() + 0.01);
                 }
                 velocity.setX(0);
-                break; // Break on first collision to avoid double adjustments
+                break;
             }
         }
     }
 
     // --- 2. Resolve Vertical (Y-axis) Movement ---
-    // Save previous bottom position to check one-way platform logic
     double previousBottom = actorBox.bottom();
-    
+
     if (std::abs(velocity.y()) > 0.0001) {
         actorBox.translate(0, velocity.y());
 
-        // Check solid blocks (full 4-way collision)
         for (const QRect& solid : solids) {
             QRectF solidF(solid);
             if (actorBox.intersects(solidF)) {
@@ -58,11 +59,9 @@ CollisionResult Physics::resolveMovement(QRectF& actorBox, QPointF& velocity,
             }
         }
 
-        // Check one-way platforms (only collide when falling down and from above)
         if (velocity.y() > 0 && !result.onGround) {
             for (const QRect& plat : platforms) {
                 QRectF platF(plat);
-                // Actor bottom must intersect the platform, and previous bottom must be above the platform top
                 if (actorBox.intersects(platF) && previousBottom <= platF.top() + 15.0) {
                     actorBox.setBottom(platF.top() - 0.01);
                     velocity.setY(0);

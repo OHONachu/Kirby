@@ -492,38 +492,47 @@ Sparky::Sparky(double x, double y)
 }
 
 void Sparky::update(const QList<QRect>& solids, const QList<QRect>& platforms) {
+    // 1. 套用重力
     velocity.setY(velocity.y() + 1.2);
 
+    // 2. 處理當前的水平速度狀態（放電或冷卻時不移動）
     if (sparkActiveTicks > 0) {
         sparkActiveTicks--;
-        velocity.setX(0); // Stands still when shocking
+        velocity.setX(0);
         if (sparkActiveTicks <= 0) sparking = false;
     } else {
-        // AI Jump routine
         if (jumpCooldown > 0) {
             jumpCooldown--;
             velocity.setX(0);
-        } else {
-            if (isGrounded()) {
-                velocity.setY(-12.0); // Jump up
-                velocity.setX(dir == LEFT ? -4.5 : 4.5);
-                jumpCooldown = 60 + (rand() % 40); // Reset cooldown
-            }
         }
     }
 
+    // 3. 進行物理移動與碰撞偵測
     CollisionResult col = Physics::resolveMovement(rect, velocity, solids, platforms);
+
+    // 4. 撞牆反轉判定
     if (col.hitWall) {
         dir = (dir == LEFT) ? RIGHT : LEFT;
         velocity.setX(-velocity.x());
     }
 
-    // Spark trigger AI logic
-    if (col.onGround && rand() % 250 == 0 && sparkActiveTicks <= 0) {
-        sparking = true;
-        sparkActiveTicks = 60; // Shocks for 1 second
+    // 5. 【修正重點】把 AI 跳躍邏輯移到這裡，直接使用物理運算回傳的 col.onGround
+    if (sparkActiveTicks <= 0 && jumpCooldown <= 0) {
+        if (col.onGround) {
+            velocity.setY(-12.0); // 往上跳
+            velocity.setX(dir == LEFT ? -4.5 : 4.5);
+            jumpCooldown = 60 + (rand() % 40); // 重置跳躍冷卻時間
+        }
     }
 
+    // 6. Spark 放電觸發邏輯
+    if (col.onGround && rand() % 250 == 0 && sparkActiveTicks <= 0) {
+        sparking = true;
+        sparkActiveTicks = 60; // 放電 1 秒
+        velocity.setX(0); // 確保放電時停在原地
+    }
+
+    // 7. 動畫影格更新
     animTick++;
     if (animTick >= 10) {
         animTick = 0;
