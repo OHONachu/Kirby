@@ -10,10 +10,16 @@ CONFIG += c++11
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    physics.cpp \
+    stage.cpp \
+    entities.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    physics.h \
+    stage.h \
+    entities.h
 
 FORMS += \
     mainwindow.ui
