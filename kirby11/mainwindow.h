@@ -6,6 +6,7 @@
 #include <QKeyEvent>    // 加入鍵盤事件
 #include <QPaintEvent>  // 加入繪圖事件
 #include <QPainter>     // 加入畫筆
+#include <vector>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -43,6 +44,7 @@ private:
     int moveSpeed;      // 左右移動的速度
     bool isMovingLeft;  // 記錄是否正在按左鍵
     bool isMovingRight; // 記錄是否正在按右鍵
+    std::vector<QRect> platforms;
 };
 
 #endif // MAINWINDOW_H
