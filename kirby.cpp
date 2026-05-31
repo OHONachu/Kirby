@@ -281,7 +281,7 @@ void Kirby::updateAnimation() {
 // ============ 根據狀態更新顯示的 Sprite ============
 void Kirby::updateSprite() {
     QPixmap current;
-
+    int oldHeight = pixmap().height();
     // 根據能力狀態選擇 sprite set
     if (ability == ABILITY_FIRE) {
         // === Fire Ability Sprites ===
@@ -341,6 +341,10 @@ void Kirby::updateSprite() {
     }
 
     setPixmap(current);
+    int newHeight = pixmap().height();
+    if (oldHeight > 0 && newHeight != oldHeight) {
+        setY(y() + (oldHeight - newHeight));
+    }
 }
 
 // ============ 吸入 ============
