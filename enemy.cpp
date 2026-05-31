@@ -65,11 +65,18 @@ WaddleDee::WaddleDee(double sx, double sy, double pMinX, double pMaxX)
     vx = ENEMY_SPEED;
 
     // 載入 7 個走路動畫 frames
-    for (int i = 0; i <= 6; i++) {
-        walkFrames.append(loadAndScale(
-            QString("Dataset/Waddle Dee/Waddle_Dee_%1.png").arg(i)));
+    // 載入 7 個走路動畫 frames (手動逐一加入)
+    walkFrames.append(loadAndScale(":/Dataset/Waddle Dee/Waddle_Dee_0.png"));
+    walkFrames.append(loadAndScale(":/Dataset/Waddle Dee/Waddle_Dee_1.png"));
+    walkFrames.append(loadAndScale(":/Dataset/Waddle Dee/Waddle_Dee_2.png"));
+    walkFrames.append(loadAndScale(":/Dataset/Waddle Dee/Waddle_Dee_3.png"));
+    walkFrames.append(loadAndScale(":/Dataset/Waddle Dee/Waddle_Dee_4.png"));
+    walkFrames.append(loadAndScale(":/Dataset/Waddle Dee/Waddle_Dee_5.png"));
+    walkFrames.append(loadAndScale(":/Dataset/Waddle Dee/Waddle_Dee_6.png"));
+
+    if (!walkFrames.isEmpty()) {
+        setPixmap(walkFrames[0]);
     }
-    if (!walkFrames.isEmpty()) setPixmap(walkFrames[0]);
 }
 
 void WaddleDee::updateEnemy() {

@@ -19,3 +19,6 @@ HEADERS += \
     kirby.h \
     enemy.h \
     projectile.h
+
+RESOURCES += \
+    res.qrc

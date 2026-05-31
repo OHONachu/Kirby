@@ -1,0 +1,87 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Dataset/background/game_over_continue.png</file>
+        <file>Dataset/background/game_over_quit.png</file>
+        <file>Dataset/background/Stage1(1).png</file>
+        <file>Dataset/background/Stage1(2).png</file>
+        <file>Dataset/background/Stage1(3).png</file>
+        <file>Dataset/background/Stage2(1).png</file>
+        <file>Dataset/background/Stage2(2).png</file>
+        <file>Dataset/background/start.png</file>
+        <file>Dataset/background/supplement(1).jpg</file>
+        <file>Dataset/Gordo/Gordo(0).png</file>
+        <file>Dataset/Gordo/Gordo(1).png</file>
+        <file>Dataset/Hot Head/Hot_head_attack_L.png</file>
+        <file>Dataset/Hot Head/Hot_head_attack_R.png</file>
+        <file>Dataset/Hot Head/Hot_head_fire(1).png</file>
+        <file>Dataset/Hot Head/Hot_head_fire(2)_L.png</file>
+        <file>Dataset/Hot Head/Hot_head_fire(2)_R.png</file>
+        <file>Dataset/Hot Head/Hot_head_fire(3)_L.png</file>
+        <file>Dataset/Hot Head/Hot_head_fire(3)_R.png</file>
+        <file>Dataset/Hot Head/Hot_head_run_L.png</file>
+        <file>Dataset/Hot Head/Hot_head_run_R.png</file>
+        <file>Dataset/Hot Head/Hot_head_stop_L.png</file>
+        <file>Dataset/Hot Head/Hot_head_stop_R.png</file>
+        <file>Dataset/item/1UP.png</file>
+        <file>Dataset/item/brick.png</file>
+        <file>Dataset/item/door.png</file>
+        <file>Dataset/item/floor.png</file>
+        <file>Dataset/item/goal_door.png</file>
+        <file>Dataset/item/HP_0.png</file>
+        <file>Dataset/item/HP_1.png</file>
+        <file>Dataset/item/life.png</file>
+        <file>Dataset/item/Maxim Tomato.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_attack_L.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_attack_R.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_board.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_down_L.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_down_R.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_fire(1)_L.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_fire(1)_R.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_fire(2)_L.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_fire(2)_R.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_fire(3)_L.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_fire(3)_R.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_fly(1)_L.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_fly(1)_R.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_fly(2)_L.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_fly(2)_R.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_run(1)_L.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_run(1)_R.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_run(2)_L.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_run(2)_R.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_run(3)_L.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_run(3)_R.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_stop_L.png</file>
+        <file>Dataset/Kirby_fire/kirbyfire_stop_R.png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_attack(1).png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_attack(2).png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_attack(3).png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_board.png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_down_L.png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_down_R.png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_fly(1)_L.png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_fly(1)_R.png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_fly(2)_L.png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_fly(2)_R.png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_run(1)_L.png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_run(1)_R.png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_run(2)_L.png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_run(2)_R.png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_stop_L.png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_stop_R.png</file>
+        <file>Dataset/Sparky/Sparky_attack_1.png</file>
+        <file>Dataset/Sparky/Sparky_attack_2.png</file>
+        <file>Dataset/Sparky/Sparky_left_1.png</file>
+        <file>Dataset/Sparky/Sparky_left_2.png</file>
+        <file>Dataset/Sparky/Sparky_ritht_1.png</file>
+        <file>Dataset/Sparky/Sparky_ritht_2.png</file>
+        <file>Dataset/Waddle Dee/Waddle_Dee_0.png</file>
+        <file>Dataset/Waddle Dee/Waddle_Dee_1.png</file>
+        <file>Dataset/Waddle Dee/Waddle_Dee_2.png</file>
+        <file>Dataset/Waddle Dee/Waddle_Dee_3.png</file>
+        <file>Dataset/Waddle Dee/Waddle_Dee_4.png</file>
+        <file>Dataset/Waddle Dee/Waddle_Dee_5.png</file>
+        <file>Dataset/Waddle Dee/Waddle_Dee_6.png</file>
+    </qresource>
+</RCC>
