@@ -250,7 +250,10 @@ void Kirby::handleInput(const QSet<int> &keys) {
 
     // === 飛行中按 X = 吐氣（解除飛行）===
     if (state == KIRBY_HOVERING && keys.contains(Qt::Key_X)) {
-        state = KIRBY_JUMPING;
+        state = KIRBY_INHALING; // 借用吸氣狀態來播放動畫
+        inhaling = true;        // 標記為正在吸氣(吐氣)
+        animFrame = 0;          // 動畫從頭播
+        animTimer = 0;          // 計時器歸零
         return;
     }
 
@@ -288,6 +291,13 @@ void Kirby::updateAnimation() {
     if (animTimer >= 8) {
         animTimer = 0;
         animFrame++;
+
+        // 【新增】：如果是在空中播放吸氣(吐氣)動畫，停留 3 個影格的時間後強制掉落
+        if (state == KIRBY_INHALING && !onGround && animFrame >= 3) {
+            state = KIRBY_JUMPING; // 自動轉為跳躍(下落)狀態
+            inhaling = false;      // 關閉吸氣標記
+            animFrame = 0;         // 動畫歸零
+        }
     }
 }
 
@@ -368,7 +378,13 @@ void Kirby::startInhale() {
 
 void Kirby::stopInhale() {
     inhaling = false;
-    if (state == KIRBY_INHALING) state = KIRBY_NORMAL;
+    if (state == KIRBY_INHALING) {
+        if (onGround) {
+            state = KIRBY_NORMAL;  // 平地放開變回站立
+        } else {
+            state = KIRBY_JUMPING; // 在空中放開直接掉落
+        }
+    }
 }
 
 // ============ 吸入敵人後進入飽足 ============
