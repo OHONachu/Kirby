@@ -66,6 +66,7 @@ public:
     QRectF getAttackBox() const;
     bool canBeHurt() const;
 
+    bool upKeyReleased;
 private:
     // ====== Sprites ======
     // Normal

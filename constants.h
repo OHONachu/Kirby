@@ -16,7 +16,7 @@ const double GRAVITY         = 0.5;//重力
 const double MAX_FALL_SPEED  = 10.0;//終端速度
 const double KIRBY_SPEED     = 5.0;//水平速度
 const double KIRBY_JUMP_FORCE = -12.0;//往上跳
-const double KIRBY_HOVER_FORCE = -3.0;//飛行
+const double KIRBY_HOVER_FORCE = -6.0;//飛行
 
 // ============ 地板位置 ============
 const int FLOOR_Y = 950;//地板
