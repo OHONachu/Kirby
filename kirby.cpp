@@ -44,8 +44,8 @@ void Kirby::loadSprites() {
     spr_stand_R = loadAndScale(base + "kirby_stop_R.png");
     spr_stand_L = loadAndScale(base + "kirby_stop_L.png");
 
-    // Normal - 走路 (4 frames)
-    for (int i = 1; i <= 4; i++) {
+    // Normal - 走路 (3 frames)
+    for (int i = 1; i <= 3; i++) {
         spr_walk_R.append(loadAndScale(base + QString("kirby_run_%1_R.png").arg(i)));
         spr_walk_L.append(loadAndScale(base + QString("kirby_run_%1_L.png").arg(i)));
     }
