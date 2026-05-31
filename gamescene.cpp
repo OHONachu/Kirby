@@ -29,15 +29,15 @@ GameScene::GameScene(Game *g) : QGraphicsScene(g), game(g) {
     deathTimer = 0;
 
     // 載入 HUD 素材
-    hpFullPix  = loadAndScale("Dataset/item/HP_1.png");
-    hpEmptyPix = loadAndScale("Dataset/item/HP_0.png");
-    lifePix    = loadAndScale("Dataset/item/life.png");
-    fireBoard  = loadAndScale("Dataset/Kirby_fire/kirbyfire_board.png");
-    sparkBoard = loadAndScale("Dataset/Kirby_spark/Kirby_spark_board.png");
+    hpFullPix  = loadAndScale(":/Dataset/item/HP_1.png");
+    hpEmptyPix = loadAndScale(":/Dataset/item/HP_0.png");
+    lifePix    = loadAndScale(":/Dataset/item/life.png");
+    fireBoard  = loadAndScale(":/Dataset/Kirby_fire/kirbyfire_board.png");
+    sparkBoard = loadAndScale(":/Dataset/Kirby_spark/Kirby_spark_board.png");
 
     // Game Over 畫面
-    gameOverContinuePix = loadPix("Dataset/background/game_over_continue.png");
-    gameOverQuitPix     = loadPix("Dataset/background/game_over_quit.png");
+    gameOverContinuePix = loadPix(":/Dataset/background/game_over_continue.png");
+    gameOverQuitPix     = loadPix(":/Dataset/background/game_over_quit.png");
 }
 
 GameScene::~GameScene() {}
@@ -129,7 +129,7 @@ void GameScene::loadStage(int stageNum) {
 
 // ============ 添加地板磚塊 ============
 void GameScene::addFloor(double fx, double fy, int count) {
-    QPixmap floorPix = loadAndScale("Dataset/item/floor.png");
+    QPixmap floorPix = loadAndScale(":/Dataset/item/floor.png");
     double tileW = floorPix.width();
     double tileH = floorPix.height();
     for (int i = 0; i < count; i++) {
@@ -144,7 +144,7 @@ void GameScene::addFloor(double fx, double fy, int count) {
 
 // ============ 添加磚頭 ============
 void GameScene::addBlock(double bx, double by) {
-    QPixmap brickPix = loadAndScale("Dataset/item/brick.png");
+    QPixmap brickPix = loadAndScale(":/Dataset/item/brick.png");
     QGraphicsPixmapItem *item = new QGraphicsPixmapItem(brickPix);
     item->setPos(bx, by);
     item->setZValue(3);
@@ -154,7 +154,7 @@ void GameScene::addBlock(double bx, double by) {
 
 // ============ 添加平台 ============
 void GameScene::addPlatform(double px, double py, int width) {
-    QPixmap floorPix = loadAndScale("Dataset/item/floor.png");
+    QPixmap floorPix = loadAndScale(":/Dataset/item/floor.png");
     double tileW = floorPix.width();
     double tileH = floorPix.height();
     // 平台由多個 floor tile 組成
@@ -200,12 +200,12 @@ Enemy* GameScene::addEnemy(EnemyType type, double ex, double ey, double pMin, do
 
 // ============ Stage 1 配置 (3 frames) ============
 void GameScene::setupStage1() {
-    double floorTileW = loadAndScale("Dataset/item/floor.png").width();
+    double floorTileW = loadAndScale(":/Dataset/item/floor.png").width();
     int tilesPerFrame = (int)(FRAME_WIDTH / floorTileW) + 1;
 
     // === 載入背景 ===
     // Stage1(1) 是地面紋理，Stage1(2) 是裝飾
-    QPixmap bgSky = loadPix("Dataset/background/supplement(1).jpg");
+    QPixmap bgSky = loadPix(":/Dataset/background/supplement(1).jpg");
     bgSky = bgSky.scaled(FRAME_WIDTH, WINDOW_HEIGHT, Qt::IgnoreAspectRatio);
     for (int f = 0; f < STAGE1_FRAMES; f++) {
         QGraphicsPixmapItem *bg = new QGraphicsPixmapItem(bgSky);
@@ -262,7 +262,7 @@ void GameScene::setupStage1() {
 
     // 道具 - Maxim Tomato（Stage 1 放置）
     if (!tomatoCollected) {
-        QPixmap tomatoPix = loadAndScale("Dataset/item/Maxim Tomato.png");
+        QPixmap tomatoPix = loadAndScale(":/Dataset/item/Maxim Tomato.png");
         maximTomato = new QGraphicsPixmapItem(tomatoPix);
         maximTomato->setPos(f2x + 950, FLOOR_Y - 400);
         maximTomato->setZValue(5);
@@ -271,7 +271,7 @@ void GameScene::setupStage1() {
     }
 
     // Portal (任意門)
-    QPixmap doorPix = loadAndScale("Dataset/item/door.png");
+    QPixmap doorPix = loadAndScale(":/Dataset/item/door.png");
     portal = new QGraphicsPixmapItem(doorPix);
     portal->setPos(f3x + FRAME_WIDTH - 400, FLOOR_Y - doorPix.height());
     portal->setZValue(4);
@@ -282,13 +282,13 @@ void GameScene::setupStage1() {
 
 // ============ Stage 2 配置 (5 frames) ============
 void GameScene::setupStage2() {
-    double floorTileW = loadAndScale("Dataset/item/floor.png").width();
+    double floorTileW = loadAndScale(":/Dataset/item/floor.png").width();
     int tilesPerFrame = (int)(FRAME_WIDTH / floorTileW) + 1;
 
     // 背景
-    QPixmap bgPix1 = loadPix("Dataset/background/Stage2(1).png");
+    QPixmap bgPix1 = loadPix(":/Dataset/background/Stage2(1).png");
     bgPix1 = bgPix1.scaled(FRAME_WIDTH, 600, Qt::IgnoreAspectRatio);
-    QPixmap bgPix2 = loadPix("Dataset/background/Stage2(2).png");
+    QPixmap bgPix2 = loadPix(":/Dataset/background/Stage2(2).png");
     bgPix2 = bgPix2.scaled(FRAME_WIDTH, 600, Qt::IgnoreAspectRatio);
     for (int f = 0; f < STAGE2_FRAMES; f++) {
         QGraphicsPixmapItem *bg = new QGraphicsPixmapItem(f % 2 == 0 ? bgPix1 : bgPix2);
@@ -361,7 +361,7 @@ void GameScene::setupStage2() {
     addEnemy(ENEMY_HOT_HEAD, f5x + 700, FLOOR_Y - 260, f5x + 500, f5x + 1100);
 
     // Goal (終點門)
-    QPixmap goalPix = loadAndScale("Dataset/item/goal_door.png");
+    QPixmap goalPix = loadAndScale(":/Dataset/item/goal_door.png");
     goalDoor = new QGraphicsPixmapItem(goalPix);
     goalDoor->setPos(f5x + FRAME_WIDTH - 400, FLOOR_Y - goalPix.height());
     goalDoor->setZValue(4);
@@ -467,7 +467,7 @@ void GameScene::updateKirby(const QSet<int> &keys) {
     if (wasMouthful && !kirby->mouthful && kirby->state == KIRBY_NORMAL
         && keys.contains(Qt::Key_X)) {
         // 生成星星彈
-        QPixmap starPix = loadAndScale("Dataset/Kirby_normal/kirby_attack_star(2).png");
+        QPixmap starPix = loadAndScale(":/Dataset/Kirby_normal/kirby_attack_star(2).png");
         double sx = kirby->facingRight ? kirby->x() + kirby->pixmap().width()
                                        : kirby->x() - starPix.width();
         double sy = kirby->y() + kirby->pixmap().height() / 3.0;
@@ -790,7 +790,7 @@ void GameScene::showMenuScreen() {
     clearStage();
     setSceneRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    QPixmap menuPix = loadPix("Dataset/background/start.png");
+    QPixmap menuPix = loadPix(":/Dataset/background/start.png");
     menuPix = menuPix.scaled(WINDOW_WIDTH, WINDOW_HEIGHT, Qt::IgnoreAspectRatio);
     menuBg = new QGraphicsPixmapItem(menuPix);
     menuBg->setPos(0, 0);

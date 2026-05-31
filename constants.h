@@ -9,7 +9,7 @@ const int STAGE1_FRAMES = 3;
 const int STAGE2_FRAMES = 5;
 
 // ============ 圖片縮放 ============
-const int SPRITE_SCALE = 2;
+const int SPRITE_SCALE = 1;
 
 // ============ 物理參數 ============
 const double GRAVITY         = 0.5;

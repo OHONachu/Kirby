@@ -117,8 +117,8 @@ Gordo::Gordo(double sx, double sy, double minY, double maxY)
     vx = 0;
     vy = 1.5;
 
-    frame0 = loadAndScale("Dataset/Gordo/Gordo(0).png");
-    frame1 = loadAndScale("Dataset/Gordo/Gordo(1).png");
+    frame0 = loadAndScale(":/Dataset/Gordo/Gordo(0).png");
+    frame1 = loadAndScale(":/Dataset/Gordo/Gordo(1).png");
     setPixmap(frame0);
 }
 
@@ -156,13 +156,13 @@ HotHead::HotHead(double sx, double sy, double pMinX, double pMaxX)
     wantsToShoot = false;
     attackCooldown = HOTHEAD_FIRE_INTERVAL;
 
-    spr_walk_R  = loadAndScale("Dataset/Hot Head/Hot_head_run_R.png");
-    spr_walk_L  = loadAndScale("Dataset/Hot Head/Hot_head_run_L.png");
-    spr_stop_R  = loadAndScale("Dataset/Hot Head/Hot_head_stop_R.png");
-    spr_stop_L  = loadAndScale("Dataset/Hot Head/Hot_head_stop_L.png");
-    spr_attack_R = loadAndScale("Dataset/Hot Head/Hot_head_attack_R.png");
-    spr_attack_L = loadAndScale("Dataset/Hot Head/Hot_head_attack_L.png");
-    spr_fire_proj = loadAndScale("Dataset/Hot Head/Hot_head_fire(1).png");
+    spr_walk_R  = loadAndScale(":/Dataset/Hot Head/Hot_head_run_R.png");
+    spr_walk_L  = loadAndScale(":/Dataset/Hot Head/Hot_head_run_L.png");
+    spr_stop_R  = loadAndScale(":/Dataset/Hot Head/Hot_head_stop_R.png");
+    spr_stop_L  = loadAndScale(":/Dataset/Hot Head/Hot_head_stop_L.png");
+    spr_attack_R = loadAndScale(":/Dataset/Hot Head/Hot_head_attack_R.png");
+    spr_attack_L = loadAndScale(":/Dataset/Hot Head/Hot_head_attack_L.png");
+    spr_fire_proj = loadAndScale(":/Dataset/Hot Head/Hot_head_fire(1).png");
 
     setPixmap(spr_walk_R);
 }
@@ -237,12 +237,12 @@ Sparky::Sparky(double sx, double sy, double pMinX, double pMaxX)
     jumpTimer = 60;
     onGround = true;
 
-    spr_walk_L1 = loadAndScale("Dataset/Sparky/Sparky_left_1.png");
-    spr_walk_L2 = loadAndScale("Dataset/Sparky/Sparky_left_2.png");
-    spr_walk_R1 = loadAndScale("Dataset/Sparky/Sparky_ritht_1.png"); // 原始檔名有 typo
-    spr_walk_R2 = loadAndScale("Dataset/Sparky/Sparky_ritht_2.png");
-    spr_attack1 = loadAndScale("Dataset/Sparky/Sparky_attack_1.png");
-    spr_attack2 = loadAndScale("Dataset/Sparky/Sparky_attack_2.png");
+    spr_walk_L1 = loadAndScale(":/Dataset/Sparky/Sparky_left_1.png");
+    spr_walk_L2 = loadAndScale(":/Dataset/Sparky/Sparky_left_2.png");
+    spr_walk_R1 = loadAndScale(":/Dataset/Sparky/Sparky_ritht_1.png"); // 原始檔名有 typo
+    spr_walk_R2 = loadAndScale(":/Dataset/Sparky/Sparky_ritht_2.png");
+    spr_attack1 = loadAndScale(":/Dataset/Sparky/Sparky_attack_1.png");
+    spr_attack2 = loadAndScale(":/Dataset/Sparky/Sparky_attack_2.png");
 
     setPixmap(spr_walk_R1);
 }

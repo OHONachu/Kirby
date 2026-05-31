@@ -38,7 +38,7 @@ QPixmap Kirby::loadAndScale(const QString &path) {
 
 // ============ 載入所有 Sprites ============
 void Kirby::loadSprites() {
-    QString base = "Dataset/Kirby_normal/";
+    QString base = ":/Dataset/Kirby_normal/";
 
     // Normal - 站立
     spr_stand_R = loadAndScale(base + "kirby_stop_R.png");
