@@ -2,7 +2,7 @@
 
 // ============ Enemy 基類 ============
 Enemy::Enemy(EnemyType t, double sx, double sy, double pMinX, double pMaxX)
-    : type(t), startX(sx), startY(sy), patrolMinX(pMinX), patrolMaxX(pMaxX)
+    : type(t), startX(sx), startY(sy), patrolMinX(pMinX), patrolMaxX(pMaxX)//初始化
 {
     vx = 0; vy = 0;
     facingRight = true;
@@ -19,10 +19,10 @@ Enemy::Enemy(EnemyType t, double sx, double sy, double pMinX, double pMaxX)
     setZValue(5);
 }
 
-QPixmap Enemy::loadAndScale(const QString &path) {
+QPixmap Enemy::loadAndScale(const QString &path) {//抓圖片
     QPixmap pix(path);
     if (pix.isNull()) {
-        pix = QPixmap(50, 50);
+        pix = QPixmap(50, 50);//破圖處理
         pix.fill(Qt::red);
     }
     return pix.scaled(pix.width() * SPRITE_SCALE, pix.height() * SPRITE_SCALE,
