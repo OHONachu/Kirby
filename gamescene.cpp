@@ -267,7 +267,10 @@ void GameScene::setupStage1() {
 
     addBlock(f2x + 500, FLOOR_Y - 214);
 
-    addEnemy(ENEMY_WADDLE_DEE, f2x + 300, FLOOR_Y - 260, f2x + 100, f2x + 700);
+    // 瓦豆魯迪：直接傳入平台的高度 (FLOOR_Y - 300)，讓 addEnemy 自動算好並貼齊平台
+    addEnemy(ENEMY_WADDLE_DEE, f2x + 300, FLOOR_Y - 300, f2x + 100, f2x + 700);
+
+    // 刺球(Gordo)：維持原樣，因為 addEnemy 裡的 if 判斷已經排除了牠，讓牠維持在半空飄浮
     addEnemy(ENEMY_GORDO, f2x + 1100, FLOOR_Y - 400, 0, 0);
 
     // === Frame 1-3: 吸入吐出 + Portal ===
@@ -279,17 +282,27 @@ void GameScene::setupStage1() {
 
     addBlock(f3x + 500, FLOOR_Y - 214);
 
-    addEnemy(ENEMY_WADDLE_DEE, f3x + 300, FLOOR_Y - 260, f3x + 100, f3x + 600);
-    addEnemy(ENEMY_WADDLE_DEE, f3x + 700, FLOOR_Y - 260, f3x + 600, f3x + 1100);
-
+    // 兩隻瓦豆魯迪都直接傳入主地板高度 FLOOR_Y，讓程式自動算出貼齊地面的高度
+    addEnemy(ENEMY_WADDLE_DEE, f3x + 300, FLOOR_Y, f3x + 100, f3x + 600);
+    addEnemy(ENEMY_WADDLE_DEE, f3x + 700, FLOOR_Y, f3x + 600, f3x + 1100);
+    // 道具 - Maxim Tomato（Stage 1 放置）
     // 道具 - Maxim Tomato（Stage 1 放置）
     if (!tomatoCollected) {
         QPixmap tomatoPix = loadAndScale(":/Dataset/item/Maxim Tomato.png");
         maximTomato = new QGraphicsPixmapItem(tomatoPix);
-        maximTomato->setPos(f2x + 950, FLOOR_Y - 400);
+
+        // 要放置的目標高度 (對齊底下的平台 FLOOR_Y - 350)
+        double targetY = FLOOR_Y - 350;
+
+        // 實際的 Y 座標 = 目標高度 - 番茄圖片的高度
+        double tomatoY = targetY - tomatoPix.height();
+
+        maximTomato->setPos(f2x + 950, tomatoY);
         maximTomato->setZValue(5);
         addItem(maximTomato);
-        tomatoRect = QRectF(f2x + 950, FLOOR_Y - 400, tomatoPix.width(), tomatoPix.height());
+
+        // 碰撞矩形也要使用算好貼齊的 tomatoY
+        tomatoRect = QRectF(f2x + 950, tomatoY, tomatoPix.width(), tomatoPix.height());
     }
 
     // Portal (任意門)
@@ -307,15 +320,29 @@ void GameScene::setupStage2() {
     double floorTileW = loadAndScale(":/Dataset/item/floor.png").width();
     int tilesPerFrame = (int)(FRAME_WIDTH / floorTileW) + 1;
 
-    // 背景
-    QPixmap bgPix1 = loadPix(":/Dataset/background/Stage2(1).png");
-    bgPix1 = bgPix1.scaled(FRAME_WIDTH, 600, Qt::IgnoreAspectRatio);
-    QPixmap bgPix2 = loadPix(":/Dataset/background/Stage2(2).png");
-    bgPix2 = bgPix2.scaled(FRAME_WIDTH, 600, Qt::IgnoreAspectRatio);
+    // === 載入背景 (Stage 2) ===
+    // 1. 預先載入兩張圖片，並強制縮放寬度為 1620 (高度自動等比例縮放)
+    QPixmap bgPix1 = loadPix(":/Dataset/background/Stage2(1).png").scaledToWidth(1620, Qt::SmoothTransformation);
+    QPixmap bgPix2 = loadPix(":/Dataset/background/Stage2(2).png").scaledToWidth(1620, Qt::SmoothTransformation);
+
+    // 2. 預先計算兩張圖片貼齊底部的 Y 座標 (以防兩張圖的高度有些微不同)
+    double bottomY1 = WINDOW_HEIGHT - bgPix1.height();
+    double bottomY2 = WINDOW_HEIGHT - bgPix2.height();
+
+    // 3. 鋪設 5 個 Frame 的背景
     for (int f = 0; f < STAGE2_FRAMES; f++) {
-        QGraphicsPixmapItem *bg = new QGraphicsPixmapItem(f % 2 == 0 ? bgPix1 : bgPix2);
-        bg->setPos(f * FRAME_WIDTH, 0);
-        bg->setZValue(0);
+        // 利用 f % 2 == 0 判斷現在是偶數(0,2,4)還是奇數(1,3)，來交替選擇圖片與對應的 Y 座標
+        QPixmap currentPix = (f % 2 == 0) ? bgPix1 : bgPix2;
+        double currentBottomY = (f % 2 == 0) ? bottomY1 : bottomY2;
+
+        // 建立圖形元件
+        QGraphicsPixmapItem *bg = new QGraphicsPixmapItem(currentPix);
+
+        // X 座標：依序放在 0, 1620, 3240, 4860, 6480 的位置
+        // Y 座標：使用剛才算好貼齊底部的 Y 座標
+        bg->setPos(f * 1620, currentBottomY);
+
+        bg->setZValue(0); // 設定為最底層
         addItem(bg);
         bgItems.append(bg);
     }
@@ -326,8 +353,9 @@ void GameScene::setupStage2() {
     addPlatform(900, FLOOR_Y - 400, 3);
     addBlock(600, FLOOR_Y - 214);
     addBlock(1200, FLOOR_Y - 214);
-    addEnemy(ENEMY_WADDLE_DEE, 400, FLOOR_Y - 260, 200, 800);
-    addEnemy(ENEMY_HOT_HEAD, 1000, FLOOR_Y - 260, 800, 1400);
+    // 瓦豆魯迪與熱氣頭都直接傳入主地板高度 FLOOR_Y，讓程式自動計算並完美貼地
+    addEnemy(ENEMY_WADDLE_DEE, 400, FLOOR_Y, 200, 800);
+    addEnemy(ENEMY_HOT_HEAD, 1000, FLOOR_Y, 800, 1400);
 
     // === Frame 2-2: 引入 Spark 能力 ===
     double f2x = FRAME_WIDTH;
@@ -336,9 +364,8 @@ void GameScene::setupStage2() {
     addPlatform(f2x + 700, FLOOR_Y - 250, 3);
     addPlatform(f2x + 1100, FLOOR_Y - 400, 2);
     addBlock(f2x + 500, FLOOR_Y - 214);
-    addEnemy(ENEMY_GORDO, f2x + 600, FLOOR_Y - 350, 0, 0);
-    addEnemy(ENEMY_SPARKY, f2x + 900, FLOOR_Y - 260, f2x + 700, f2x + 1300);
-
+    addEnemy(ENEMY_GORDO, f2x + 600, FLOOR_Y - 350, 0, 0); // Gordo 維持飄浮
+    addEnemy(ENEMY_SPARKY, f2x + 900, FLOOR_Y, f2x + 700, f2x + 1300); // 拿掉 -260
     // === Frame 2-3: 複雜配置 + Maxim Tomato ===
     double f3x = FRAME_WIDTH * 2;
     addFloor(f3x, FLOOR_Y, tilesPerFrame);
@@ -346,8 +373,8 @@ void GameScene::setupStage2() {
     addPlatform(f3x + 800, FLOOR_Y - 380, 3);
     addBlock(f3x + 400, FLOOR_Y - 214);
     addBlock(f3x + 1100, FLOOR_Y - 320);
-    addEnemy(ENEMY_WADDLE_DEE, f3x + 300, FLOOR_Y - 260, f3x + 100, f3x + 600);
-    addEnemy(ENEMY_HOT_HEAD, f3x + 900, FLOOR_Y - 260, f3x + 700, f3x + 1300);
+    addEnemy(ENEMY_WADDLE_DEE, f3x + 300, FLOOR_Y, f3x + 100, f3x + 600);
+    addEnemy(ENEMY_HOT_HEAD, f3x + 900, FLOOR_Y, f3x + 700, f3x + 1300);
 
     // === Frame 2-4: 高難度 + 1UP ===
     double f4x = FRAME_WIDTH * 3;
@@ -360,9 +387,8 @@ void GameScene::setupStage2() {
     addPlatform(f4x + 200, FLOOR_Y - 350, 2);
     addPlatform(f4x + 700, FLOOR_Y - 300, 3);
     addBlock(f4x + 400, FLOOR_Y - 214);
-    addEnemy(ENEMY_GORDO, f4x + 500, FLOOR_Y - 400, 0, 0);
-    addEnemy(ENEMY_SPARKY, f4x + 900, FLOOR_Y - 260, f4x + 700, f4x + 1300);
-
+    addEnemy(ENEMY_GORDO, f4x + 500, FLOOR_Y - 400, 0, 0); // Gordo 維持飄浮
+    addEnemy(ENEMY_SPARKY, f4x + 900, FLOOR_Y, f4x + 700, f4x + 1300);
     // 1UP
     if (!oneUpCollected) {
         QPixmap oneUpPix = loadAndScale("Dataset/item/1UP.png");
@@ -379,8 +405,8 @@ void GameScene::setupStage2() {
     addPlatform(f5x + 200, FLOOR_Y - 280, 3);
     addPlatform(f5x + 800, FLOOR_Y - 350, 2);
     addBlock(f5x + 500, FLOOR_Y - 214);
-    addEnemy(ENEMY_WADDLE_DEE, f5x + 300, FLOOR_Y - 260, f5x + 100, f5x + 600);
-    addEnemy(ENEMY_HOT_HEAD, f5x + 700, FLOOR_Y - 260, f5x + 500, f5x + 1100);
+    addEnemy(ENEMY_WADDLE_DEE, f5x + 300, FLOOR_Y, f5x + 100, f5x + 600);
+    addEnemy(ENEMY_HOT_HEAD, f5x + 700, FLOOR_Y, f5x + 500, f5x + 1100);
 
     // Goal (終點門)
     QPixmap goalPix = loadAndScale(":/Dataset/item/goal_door.png");
@@ -415,42 +441,48 @@ void GameScene::setupHUD() {
     addItem(abilityIcon);
 }
 
+
 // ============ HUD 更新 ============
 void GameScene::updateHUD() {
     if (!kirby) return;
 
     // 取得當前視口左上角（用於固定 HUD 位置）
     QPointF viewTopLeft = game->mapToScene(0, 0);
-    double hudX = viewTopLeft.x() + 20;
-    double hudY = viewTopLeft.y() + WINDOW_HEIGHT - 120;
 
-    // HP
+    // === 自訂排版參數 (畫面的右上角) ===
+    double startX = viewTopLeft.x() + WINDOW_WIDTH - 30; // 距離畫面右邊界 30 像素
+    double startY = viewTopLeft.y() + 30;                // 距離畫面頂端 30 像素
+    double hpSpacing = 5;                                // 血量圖示之間的間距
+
+    // 1. HP 顯示 (從右往左排列)
     for (int i = 0; i < hpIcons.size(); i++) {
-        hpIcons[i]->setPos(hudX + 140 + i * (hpFullPix.width() + 5), hudY + 20);
+        // 計算每個血量圖示的位置 (第0滴血在最右邊，依序往左排)
+        double hpX = startX - (i + 1) * (hpFullPix.width() + hpSpacing);
+        hpIcons[i]->setPos(hpX, startY);
+        // 根據當前血量切換滿血或空血圖片
         hpIcons[i]->setPixmap(i < kirby->hp ? hpFullPix : hpEmptyPix);
     }
 
-    // Lives
+    // 2. Lives 顯示 (放在 HP 的下方，靠右對齊)
     if (!lifeIcons.isEmpty()) {
-        lifeIcons[0]->setPos(hudX, hudY);
-    }
+        double lifeX = startX - lifePix.width();
+        double lifeY = startY + hpFullPix.height() + 15; // 距離上一排(HP) 15 像素
+        lifeIcons[0]->setPos(lifeX, lifeY);
 
-    // 能力圖示
-    if (kirby->ability == ABILITY_FIRE) {
-        abilityIcon->setPixmap(fireBoard);
-        abilityIcon->setPos(viewTopLeft.x() + WINDOW_WIDTH - fireBoard.width() - 20,
-                           hudY);
-        abilityIcon->setVisible(true);
-    } else if (kirby->ability == ABILITY_SPARK) {
-        abilityIcon->setPixmap(sparkBoard);
-        abilityIcon->setPos(viewTopLeft.x() + WINDOW_WIDTH - sparkBoard.width() - 20,
-                           hudY);
-        abilityIcon->setVisible(true);
-    } else {
-        abilityIcon->setVisible(false);
+        // 3. 能力圖示 (放在 Lives 的左邊，保留 20 像素的間距)
+        if (kirby->ability == ABILITY_FIRE) {
+            abilityIcon->setPixmap(fireBoard);
+            abilityIcon->setPos(lifeX - fireBoard.width() - 20, lifeY);
+            abilityIcon->setVisible(true);
+        } else if (kirby->ability == ABILITY_SPARK) {
+            abilityIcon->setPixmap(sparkBoard);
+            abilityIcon->setPos(lifeX - sparkBoard.width() - 20, lifeY);
+            abilityIcon->setVisible(true);
+        } else {
+            abilityIcon->setVisible(false);
+        }
     }
 }
-
 // ============ 主更新循環 ============
 void GameScene::updateGame(const QSet<int> &keys) {
     if (!kirby) return;
