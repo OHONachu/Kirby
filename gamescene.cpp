@@ -154,17 +154,17 @@ void GameScene::addBlock(double bx, double by) {
 
 // ============ 添加平台 ============
 void GameScene::addPlatform(double px, double py, int width) {
-    QPixmap floorPix = loadAndScale(":/Dataset/item/floor.png");
-    double tileW = floorPix.width();
-    double tileH = floorPix.height();
+    QPixmap floorPix = loadAndScale(":/Dataset/item/floor.png");//載入圖片
+    double tileW = floorPix.width();//寬度
+    double tileH = floorPix.height();//高度
     // 平台由多個 floor tile 組成
     double totalW = tileW * width;
     for (int i = 0; i < width; i++) {
         QGraphicsPixmapItem *tile = new QGraphicsPixmapItem(floorPix);
         tile->setPos(px + i * tileW, py);
-        tile->setZValue(2);
-        addItem(tile);
-        floorTiles.append(tile);
+        tile->setZValue(2);//圖層
+        addItem(tile);//呈現在螢幕上
+        floorTiles.append(tile);//加入陣列
     }
     platforms.append({nullptr, QRectF(px, py, totalW, tileH)});
 }
@@ -192,6 +192,14 @@ Enemy* GameScene::addEnemy(EnemyType type, double ex, double ey, double pMin, do
         break;
     }
     if (e) {
+        // === 新增：自動貼齊地板的邏輯 ===
+        // 取得這個敵人建構好之後，圖片的實際高度
+        double enemyHeight = e->boundingRect().height();
+
+        // 刺球(Gordo)通常是飄浮的，我們排除牠；其他的敵人都強制把腳對齊傳入的 ey
+        if (type != ENEMY_GORDO) {
+            e->setY(ey - enemyHeight);
+        }
         addItem(e);
         enemies.append(e);
     }
@@ -204,13 +212,27 @@ void GameScene::setupStage1() {
     int tilesPerFrame = (int)(FRAME_WIDTH / floorTileW) + 1;
 
     // === 載入背景 ===
-    // Stage1(1) 是地面紋理，Stage1(2) 是裝飾
-    QPixmap bgSky = loadPix(":/Dataset/background/supplement(1).jpg");
-    bgSky = bgSky.scaled(FRAME_WIDTH, WINDOW_HEIGHT, Qt::IgnoreAspectRatio);
     for (int f = 0; f < STAGE1_FRAMES; f++) {
+        // 動態產生檔名：當 f=0 時載入 Stage1(1).png，f=1 時載入 Stage1(2).png...
+        QString imagePath = QString(":/Dataset/background/Stage1(%1).png").arg(f + 1);
+
+        // 載入當下對應的背景圖
+        QPixmap bgSky = loadPix(imagePath);
+
+        // 強制將圖片寬度縮放為 1620，高度按比例縮放
+        bgSky = bgSky.scaledToWidth(1620, Qt::SmoothTransformation);
+
+        // 計算貼齊底部的 Y 座標 (以防每張圖高度有些微落差，我們在迴圈內計算)
+        double bottomY = WINDOW_HEIGHT - bgSky.height();
+
+        // 建立圖形元件
         QGraphicsPixmapItem *bg = new QGraphicsPixmapItem(bgSky);
-        bg->setPos(f * FRAME_WIDTH, 0);
-        bg->setZValue(0);
+
+        // X 座標：依序放在 0, 1620, 3240 的位置
+        // Y 座標：貼齊視窗底部
+        bg->setPos(f * 1620, bottomY);
+
+        bg->setZValue(0); // 最底層
         addItem(bg);
         bgItems.append(bg);
     }
@@ -229,7 +251,7 @@ void GameScene::setupStage1() {
     addBlock(1000, FLOOR_Y - 214);
 
     // 敵人 (至少 1 個)
-    addEnemy(ENEMY_WADDLE_DEE, 500, FLOOR_Y - 260, 200, 800);
+    addEnemy(ENEMY_WADDLE_DEE, 500, FLOOR_Y, 200, 800);
 
     // === Frame 1-2: 學會迴避 ===
     double f2x = FRAME_WIDTH;
