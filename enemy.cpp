@@ -237,13 +237,20 @@ Sparky::Sparky(double sx, double sy, double pMinX, double pMaxX)
     jumpTimer = 60;
     onGround = true;
 
-    spr_walk_L1 = loadAndScale(":/Dataset/Sparky/Sparky_left_1.png");
-    spr_walk_L2 = loadAndScale(":/Dataset/Sparky/Sparky_left_2.png");
-    spr_walk_R1 = loadAndScale(":/Dataset/Sparky/Sparky_ritht_1.png"); // 原始檔名有 typo
-    spr_walk_R2 = loadAndScale(":/Dataset/Sparky/Sparky_ritht_2.png");
+    // 1. 先載入 attack1 作為「基準尺寸」
     spr_attack1 = loadAndScale(":/Dataset/Sparky/Sparky_attack_1.png");
-    spr_attack2 = loadAndScale(":/Dataset/Sparky/Sparky_attack_2.png");
 
+    // 2. 獲取並儲存 attack1 的尺寸
+    QSize targetSize = spr_attack1.size();
+
+    // 3. 載入其他圖片時，直接在後面串接 .scaled() 強制縮放為 targetSize
+    spr_attack2 = loadAndScale(":/Dataset/Sparky/Sparky_attack_2.png").scaled(targetSize, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+
+    spr_walk_L1 = loadAndScale(":/Dataset/Sparky/Sparky_left_1.png").scaled(targetSize, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_walk_L2 = loadAndScale(":/Dataset/Sparky/Sparky_left_2.png").scaled(targetSize, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+
+    spr_walk_R1 = loadAndScale(":/Dataset/Sparky/Sparky_ritht_1.png").scaled(targetSize, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_walk_R2 = loadAndScale(":/Dataset/Sparky/Sparky_ritht_2.png").scaled(targetSize, Qt::IgnoreAspectRatio, Qt::FastTransformation);
     setPixmap(spr_walk_R1);
 }
 
@@ -323,7 +330,7 @@ bool Sparky::isSparking() const {
 
 QRectF Sparky::getSparkBox() const {
     if (!isAttacking) return QRectF();
-    double expand = 60;
+    double expand = 30;
     return QRectF(x() - expand, y() - expand,
                   pixmap().width() + expand * 2,
                   pixmap().height() + expand * 2);

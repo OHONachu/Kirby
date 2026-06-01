@@ -38,6 +38,7 @@ public:
     void showMenuScreen();
     void showGameOverScreen();
     void showClearScreen();
+    void advanceClearScreen(Game *game);
     void toggleGameOverSelection();
     void confirmGameOverSelection(Game *game);
 
@@ -90,6 +91,7 @@ private:
 
     // 死亡/重生計時
     int deathTimer;
+    int clearStep;
 
     // 圖片載入
     QPixmap loadPix(const QString &path);

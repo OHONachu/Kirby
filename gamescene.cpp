@@ -27,6 +27,7 @@ GameScene::GameScene(Game *g) : QGraphicsScene(g), game(g) {
     oneUpCollected = false;
     gameOverSelection = 0;
     deathTimer = 0;
+    clearStep = 0;
 
     // 載入 HUD 素材
     hpFullPix  = loadAndScale(":/Dataset/item/HP_1.png");
@@ -911,21 +912,40 @@ void GameScene::confirmGameOverSelection(Game *g) {
 void GameScene::showClearScreen() {
     clearStage();
     setSceneRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-    setBackgroundBrush(QBrush(QColor(255, 223, 128)));
+    clearStep = 0; // 剛進通關畫面，設為步數 0
 
-    // 簡單的通關畫面
-    QGraphicsTextItem *text = new QGraphicsTextItem("STAGE CLEAR!");
-    text->setDefaultTextColor(Qt::white);
-    QFont font("Arial", 72, QFont::Bold);
-    text->setFont(font);
-    text->setPos(WINDOW_WIDTH / 2 - 300, WINDOW_HEIGHT / 2 - 80);
-    text->setZValue(10);
-    addItem(text);
+    // 載入第一張通關圖片 CLEAR.jpg
+    QPixmap clearPix = loadPix(":/Dataset/background/CLEAR.jpg");
+    clearPix = clearPix.scaled(WINDOW_WIDTH, WINDOW_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-    QGraphicsTextItem *sub = new QGraphicsTextItem("Press any key to continue...");
-    sub->setDefaultTextColor(Qt::white);
-    sub->setFont(QFont("Arial", 24));
-    sub->setPos(WINDOW_WIDTH / 2 - 200, WINDOW_HEIGHT / 2 + 80);
-    sub->setZValue(10);
-    addItem(sub);
+    clearBg = new QGraphicsPixmapItem(clearPix);
+    clearBg->setPos(0, 0);
+    clearBg->setZValue(0);
+    addItem(clearBg);
+}
+
+// 🌟 新增：Enter 推進通關畫面的核心處理函數
+void GameScene::advanceClearScreen(Game *g) {
+    if (clearStep == 0) {
+        // 目前是 CLEAR.jpg -> 切換成 last1.jpg
+        QPixmap pix1 = loadPix(":/Dataset/background/last1.png");
+        pix1 = pix1.scaled(WINDOW_WIDTH, WINDOW_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        if (clearBg) {
+            clearBg->setPixmap(pix1);
+        }
+        clearStep = 1;
+    }
+    else if (clearStep == 1) {
+        // 目前是 last1.jpg -> 切換成 last2.jpg
+        QPixmap pix2 = loadPix(":/Dataset/background/last2.png");
+        pix2 = pix2.scaled(WINDOW_WIDTH, WINDOW_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        if (clearBg) {
+            clearBg->setPixmap(pix2);
+        }
+        clearStep = 2;
+    }
+    else if (clearStep == 2) {
+        // 目前是 last2.jpg -> 再按一次 Enter 直接關閉視窗結束遊戲
+        qApp->quit();
+    }
 }

@@ -51,8 +51,10 @@ void Game::keyPressEvent(QKeyEvent *event) {
 
     // Clear 畫面按任意鍵回選單
     if (currentState == STATE_CLEAR) {
-        restartFromMenu();
-        return;
+        if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
+            scene->advanceClearScreen(this);
+        }
+        return; // 攔截 Enter 與其他所有按鍵，使其在通關狀態下不影響遊戲
     }
 
     QGraphicsView::keyPressEvent(event);

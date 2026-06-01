@@ -71,7 +71,6 @@
         <file>Dataset/Kirby_spark/Kirby_spark_stop_L.png</file>
         <file>Dataset/Kirby_spark/Kirby_spark_stop_R.png</file>
         <file>Dataset/Sparky/Sparky_attack_1.png</file>
-        <file>Dataset/Sparky/Sparky_attack_2.png</file>
         <file>Dataset/Sparky/Sparky_left_1.png</file>
         <file>Dataset/Sparky/Sparky_left_2.png</file>
         <file>Dataset/Sparky/Sparky_ritht_1.png</file>
@@ -108,5 +107,9 @@
         <file>Dataset/Kirby_normal/kirby_run_2_R.png</file>
         <file>Dataset/Kirby_normal/kirby_run_3_L.png</file>
         <file>Dataset/Kirby_normal/kirby_run_3_R.png</file>
+        <file>Dataset/Sparky/Sparky_attack_2.png</file>
+        <file>Dataset/background/last2.png</file>
+        <file>Dataset/background/CLEAR.png</file>
+        <file>Dataset/background/last1.png</file>
     </qresource>
 </RCC>
