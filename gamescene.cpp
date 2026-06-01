@@ -581,38 +581,48 @@ void GameScene::checkCollisions() {
 }
 
 // ============ Kirby 地形碰撞 ============
+// ============ Kirby 地形碰撞 (完美貼地穩定版) ============
 void GameScene::checkKirbyTerrainCollision() {
     QRectF kb = kirby->getHitbox();
     kirby->onGround = false;
 
+    // 建立一個向下延伸 2 像素的檢測矩形，用於穩定著地判定
+    // 避免因為剛好貼地導致 intersects() 回傳 false 引起角色抖動
+    QRectF footCheck = kb;
+    footCheck.setBottom(footCheck.bottom() + 2);
+
     // 地板碰撞
     for (const QRectF &fr : floorRects) {
-        if (kb.intersects(fr)) {
-            // 從上方落下
-            if (kirby->vy >= 0 && kb.bottom() >= fr.top() && kb.bottom() - kirby->vy <= fr.top() + 10) {
+        if (footCheck.intersects(fr)) {
+            // 從上方落下，或者原本就完美站在地面上
+            if (kirby->vy >= 0 && kb.bottom() - kirby->vy <= fr.top() + 10) {
                 kirby->setY(fr.top() - kirby->pixmap().height());
                 kirby->vy = 0;
                 kirby->onGround = true;
                 if (kirby->state == KIRBY_JUMPING) kirby->state = KIRBY_NORMAL;
+                break; // 踩到主地板了，直接跳出
             }
         }
     }
 
     // 平台碰撞（可從下方穿越）
-    for (const Platform &pf : platforms) {
-        if (kb.intersects(pf.rect)) {
-            if (kirby->vy >= 0 && kb.bottom() >= pf.rect.top()
-                && kb.bottom() - kirby->vy <= pf.rect.top() + 10) {
-                kirby->setY(pf.rect.top() - kirby->pixmap().height());
-                kirby->vy = 0;
-                kirby->onGround = true;
-                if (kirby->state == KIRBY_JUMPING) kirby->state = KIRBY_NORMAL;
+    if (!kirby->onGround) {
+        for (const Platform &pf : platforms) {
+            if (footCheck.intersects(pf.rect)) {
+                if (kirby->vy >= 0 && kb.bottom() - kirby->vy <= pf.rect.top() + 10) {
+                    kirby->setY(pf.rect.top() - kirby->pixmap().height());
+                    kirby->vy = 0;
+                    kirby->onGround = true;
+                    if (kirby->state == KIRBY_JUMPING) kirby->state = KIRBY_NORMAL;
+                    break;
+                }
             }
         }
     }
 
     // 磚頭碰撞（四個方向阻擋）
     for (const Block &bl : blocks) {
+        // 為了精確的左右推擠與頂磚頭判定，多方向碰撞依然使用原本的緊密包圍盒 kb
         if (kb.intersects(bl.rect)) {
             double overlapLeft   = kb.right() - bl.rect.left();
             double overlapRight  = bl.rect.right() - kb.left();
@@ -638,21 +648,34 @@ void GameScene::checkKirbyTerrainCollision() {
                             (kirby->pixmap().width() - kb.width()) / 2.0);
             }
         }
+
+        // 額外著地穩定機制：如果卡比正好站在磚頭頂端，用 footCheck 來確保著地狀態不閃爍
+        if (!kirby->onGround && kirby->vy >= 0 && footCheck.intersects(bl.rect)) {
+            if (kb.bottom() <= bl.rect.top() + 5) {
+                kirby->setY(bl.rect.top() - kirby->pixmap().height());
+                kirby->vy = 0;
+                kirby->onGround = true;
+                if (kirby->state == KIRBY_JUMPING) kirby->state = KIRBY_NORMAL;
+            }
+        }
     }
 
-    // 防止掉出畫面底部（非 Hole 區域）
-    if (kirby->y() + kirby->pixmap().height() >= FLOOR_Y && !kirby->onGround) {
-        // 檢查是否在 Hole 上方
-        bool overHole = false;
-        QRectF kRect(kirby->x(), FLOOR_Y, kirby->pixmap().width(), 10);
-        for (const QRectF &h : holes) {
-            if (kRect.intersects(h)) { overHole = true; break; }
-        }
-        if (!overHole) {
-            kirby->setY(FLOOR_Y - kirby->pixmap().height());
-            kirby->vy = 0;
-            kirby->onGround = true;
-            if (kirby->state == KIRBY_JUMPING) kirby->state = KIRBY_NORMAL;
+    // 防止掉出畫面底部（非 Hole 區域的保底主草皮 Y 軸判定）
+    if (!kirby->onGround) {
+        // 這裡同樣引入 2 像素的緩衝檢測
+        if (kirby->y() + kirby->pixmap().height() >= FLOOR_Y - 2) {
+            // 檢查是否在 Hole 上方
+            bool overHole = false;
+            QRectF kRect(kirby->x(), FLOOR_Y, kirby->pixmap().width(), 10);
+            for (const QRectF &h : holes) {
+                if (kRect.intersects(h)) { overHole = true; break; }
+            }
+            if (!overHole) {
+                kirby->setY(FLOOR_Y - kirby->pixmap().height());
+                kirby->vy = 0;
+                kirby->onGround = true;
+                if (kirby->state == KIRBY_JUMPING) kirby->state = KIRBY_NORMAL;
+            }
         }
     }
 
@@ -661,7 +684,6 @@ void GameScene::checkKirbyTerrainCollision() {
     double maxX = sceneRect().width() - kirby->pixmap().width();
     if (kirby->x() > maxX) kirby->setX(maxX);
 }
-
 // ============ 敵人地形碰撞 ============
 void GameScene::checkEnemyTerrainCollision(Enemy *e) {
     if (!e->alive) return;
