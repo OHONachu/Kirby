@@ -79,7 +79,9 @@ private:
     QList<QGraphicsPixmapItem*> hpIcons;
     QList<QGraphicsPixmapItem*> lifeIcons;
     QGraphicsPixmapItem *abilityIcon;
-    QPixmap hpFullPix, hpEmptyPix, lifePix;
+    QPixmap hpFullPix, hpEmptyPix;
+    QGraphicsPixmapItem *lifeIconItem;
+    QPixmap live0Pix, live1Pix, live2Pix; // 🌟 新增：生命狀態圖片
     QPixmap fireBoard, sparkBoard, cutterBoard;
 
     // 選單/結束畫面

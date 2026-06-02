@@ -32,7 +32,12 @@ GameScene::GameScene(Game *g) : QGraphicsScene(g), game(g) {
     // 載入 HUD 素材
     hpFullPix  = loadAndScale(":/Dataset/item/HP_1.png");
     hpEmptyPix = loadAndScale(":/Dataset/item/HP_0.png");
-    lifePix    = loadAndScale(":/Dataset/item/life.png");
+
+    // 🌟 改為載入 live0, live1, live2 三張生命標示圖片
+    live0Pix   = loadAndScale(":/Dataset/item/live0.png");
+    live1Pix   = loadAndScale(":/Dataset/item/live1.png");
+    live2Pix   = loadAndScale(":/Dataset/item/live2.png");
+    lifeIconItem = nullptr; // 初始設為空指標
     fireBoard  = loadAndScale(":/Dataset/Kirby_fire/kirbyfire_board.png");
     sparkBoard = loadAndScale(":/Dataset/Kirby_spark/Kirby_spark_board.png");
     cutterBoard = loadAndScale(":/Dataset/Kirby_cutter/cs.png");
@@ -90,10 +95,12 @@ void GameScene::clearStage() {
     // 清除 HUD
     for (auto h : hpIcons) { removeItem(h); delete h; }
     hpIcons.clear();
-    for (auto l : lifeIcons) { removeItem(l); delete l; }
-    lifeIcons.clear();
+    if (lifeIconItem) {
+        removeItem(lifeIconItem);
+        delete lifeIconItem;
+        lifeIconItem = nullptr;
+    }
     if (abilityIcon) { removeItem(abilityIcon); delete abilityIcon; abilityIcon = nullptr; }
-
     // 清除選單背景
     if (menuBg) { removeItem(menuBg); delete menuBg; menuBg = nullptr; }
     if (gameOverBg) { removeItem(gameOverBg); delete gameOverBg; gameOverBg = nullptr; }
@@ -518,7 +525,7 @@ void GameScene::setupStage3() {
 }
 // ============ HUD 設置 ============
 void GameScene::setupHUD() {
-    // HP 顯示 (畫面下方)
+    // HP 顯示 (畫面下方，根據你的設定已改為右上角排版)
     for (int i = 0; i < KIRBY_MAX_HP; i++) {
         QGraphicsPixmapItem *hp = new QGraphicsPixmapItem(hpFullPix);
         hp->setZValue(100);
@@ -526,11 +533,7 @@ void GameScene::setupHUD() {
         hpIcons.append(hp);
     }
 
-    // Lives 顯示
-    QGraphicsPixmapItem *lifeIcon = new QGraphicsPixmapItem(lifePix);
-    lifeIcon->setZValue(100);
-    addItem(lifeIcon);
-    lifeIcons.append(lifeIcon);
+    // 🌟 移除了原本 lifeIcons 的初始化，改由 updateHUD 動態生成
 
     // 能力圖示
     abilityIcon = new QGraphicsPixmapItem();
@@ -542,7 +545,7 @@ void GameScene::setupHUD() {
 
 // ============ HUD 更新 ============
 void GameScene::updateHUD() {
-    if (!kirby) return;
+    if (!kirby || !game) return;
 
     // 取得當前視口左上角（用於固定 HUD 位置）
     QPointF viewTopLeft = game->mapToScene(0, 0);
@@ -561,24 +564,44 @@ void GameScene::updateHUD() {
         hpIcons[i]->setPixmap(i < kirby->hp ? hpFullPix : hpEmptyPix);
     }
 
-    // 2. Lives 顯示 (放在 HP 的下方，靠右對齊)
-    if (!lifeIcons.isEmpty()) {
-        double lifeX = startX - lifePix.width();
-        double lifeY = startY + hpFullPix.height() + 15; // 距離上一排(HP) 15 像素
-        lifeIcons[0]->setPos(lifeX, lifeY);
+    // 2. 🌟 新版 Lives 顯示 (放在 HP 的下方，靠右對齊)
+    // 先移除上一幀的生命標示
+    if (lifeIconItem) {
+        removeItem(lifeIconItem);
+        delete lifeIconItem;
+        lifeIconItem = nullptr;
+    }
 
-        // 3. 能力圖示 (放在 Lives 的左邊，保留 20 像素的間距)
-        if (kirby->ability == ABILITY_FIRE) {
-            abilityIcon->setPixmap(fireBoard);
-            abilityIcon->setPos(lifeX - fireBoard.width() - 20, lifeY);
-            abilityIcon->setVisible(true);
-        } else if (kirby->ability == ABILITY_SPARK) {
-            abilityIcon->setPixmap(sparkBoard);
-            abilityIcon->setPos(lifeX - sparkBoard.width() - 20, lifeY);
-            abilityIcon->setVisible(true);
-        } else {
-            abilityIcon->setVisible(false);
-        }
+    // 根據目前的命數選擇對應的圖片
+    QPixmap currentLivePix;
+    if (kirby->lives == 2) {
+        currentLivePix = live2Pix;
+    } else if (kirby->lives == 1) {
+        currentLivePix = live1Pix;
+    } else {
+        currentLivePix = live0Pix;
+    }
+
+    // 建立新圖片並設定座標
+    lifeIconItem = new QGraphicsPixmapItem(currentLivePix);
+    double lifeX = startX - currentLivePix.width();
+    double lifeY = startY + hpFullPix.height() + 15; // 距離上一排(HP) 15 像素
+
+    lifeIconItem->setPos(lifeX, lifeY);
+    lifeIconItem->setZValue(100);
+    addItem(lifeIconItem);
+
+    // 3. 能力圖示 (放在 Lives 的左邊，保留 20 像素的間距)
+    if (kirby->ability == ABILITY_FIRE) {
+        abilityIcon->setPixmap(fireBoard);
+        abilityIcon->setPos(lifeX - fireBoard.width() - 20, lifeY);
+        abilityIcon->setVisible(true);
+    } else if (kirby->ability == ABILITY_SPARK) {
+        abilityIcon->setPixmap(sparkBoard);
+        abilityIcon->setPos(lifeX - sparkBoard.width() - 20, lifeY);
+        abilityIcon->setVisible(true);
+    } else {
+        abilityIcon->setVisible(false);
     }
 }
 // ============ 主更新循環 ============
