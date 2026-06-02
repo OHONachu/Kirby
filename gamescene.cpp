@@ -110,7 +110,7 @@ void GameScene::loadStage(int stageNum) {
     int totalWidth = FRAME_WIDTH;
     if (stageNum == 1)      totalWidth = FRAME_WIDTH * STAGE1_FRAMES;
     else if (stageNum == 2) totalWidth = FRAME_WIDTH * STAGE2_FRAMES;
-    else if (stageNum == 3) totalWidth = FRAME_WIDTH * 3; // Stage 3 固定 3 個 frames
+    else if (stageNum == 3) totalWidth = FRAME_WIDTH * STAGE3_FRAMES;
     else if (stageNum == 4) totalWidth = FRAME_WIDTH * STAGE4_FRAMES;
 
     setSceneRect(0, 0, totalWidth, WINDOW_HEIGHT);
@@ -431,7 +431,7 @@ void GameScene::setupStage3() {
     int tilesPerFrame = (int)(FRAME_WIDTH / floorTileW) + 1;
 
     // === 載入 Stage 3 背景圖片 ===
-    for (int f = 0; f < 3; f++) {
+    for (int f = 0; f < STAGE3_FRAMES; f++) {
         // 動態產生檔名：Stage3(1).png, Stage3(2).png, Stage3(3).png
         QString imagePath = QString(":/Dataset/background/stage3(%1).png").arg(f + 1);
         QPixmap bgSky = loadPix(imagePath);

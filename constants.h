@@ -14,7 +14,7 @@ const int STAGE4_FRAMES = 3;
 const int SPRITE_SCALE = 1;
 
 // ============ 物理參數 ============
-const double GRAVITY         = 0.5;//重力
+const double GRAVITY         = 0.25;//重力
 const double MAX_FALL_SPEED  = 10.0;//終端速度
 const double KIRBY_SPEED     = 5.0;//水平速度
 const double KIRBY_JUMP_FORCE = -12.0;//往上跳
