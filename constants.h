@@ -40,7 +40,7 @@ const int    CUTTER_DURATION   = 300;
 // ============ 敵人參數 ============
 const double ENEMY_SPEED          = 2.0;
 const double HOTHEAD_FIRE_SPEED   = 6.0;
-const int    HOTHEAD_FIRE_INTERVAL = 180;
+const int    HOTHEAD_FIRE_INTERVAL = 210;
 const double SPARKY_JUMP_FORCE    = -10.0;
 const int    SPARKY_SPARK_DURATION = 60;
 

@@ -648,6 +648,12 @@ void GameScene::updateEnemies() {
                 addItem(fb);
                 projectiles.append(fb);
             }
+            if (hh && hh->isBreathingFire()){
+                QRectF breathBox = hh->getBreathBox();
+                if (breathBox.intersects(kirby->getHitbox())) {
+                    kirby->takeDamage();
+                }
+            }
         }
         if (e->type == ENEMY_KNIGHT) {
             cutKnight *ck = dynamic_cast<cutKnight*>(e);

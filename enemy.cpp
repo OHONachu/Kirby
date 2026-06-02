@@ -163,57 +163,99 @@ HotHead::HotHead(double sx, double sy, double pMinX, double pMaxX)
     spr_attack_R = loadAndScale(":/Dataset/Hot Head/Hot_head_attack_R.png");
     spr_attack_L = loadAndScale(":/Dataset/Hot Head/Hot_head_attack_L.png");
     spr_fire_proj = loadAndScale(":/Dataset/Hot Head/Hot_head_fire(1).png");
-
+    spr_breath_R1 = loadAndScale(":/Dataset/Hot Head/Hot_head_fire(2)_R.png");
+    spr_breath_L1 = loadAndScale(":/Dataset/Hot Head/Hot_head_fire(2)_L.png");
+    spr_breath_R2 = loadAndScale(":/Dataset/Hot Head/Hot_head_fire(3)_R.png");
+    spr_breath_L2 = loadAndScale(":/Dataset/Hot Head/Hot_head_fire(3)_L.png");
+    breathingFire = false;
+    attackMode = 0;
     setPixmap(spr_walk_R);
+    fireEffect = new QGraphicsPixmapItem(this);  // this = 跟著 HotHead 移動
+    fireEffect->setVisible(false);                // 預設隱藏
+    fireEffect->setZValue(6);                     // 顯示在本體前面
 }
 
 void HotHead::updateEnemy() {
     if (!alive) return;
-
     wantsToShoot = false;
-
+    breathingFire = false;
     if (isAttacking) {
-        // 攻擊動畫
         attackTimer--;
-        setPixmap(facingRight ? spr_attack_R : spr_attack_L);
-        if (attackTimer <= 0) {
-            isAttacking = false;
-            wantsToShoot = true; // 通知 GameScene 生成火球
+        if (attackMode == 0) {
+            // === Fire Ball 模式 ===
+            setPixmap(facingRight ? spr_attack_R : spr_attack_L);
+            fireEffect->setVisible(false);
+            if (attackTimer <= 0) {
+                isAttacking = false;
+                wantsToShoot = true;
+            }
+        } else {
+            // === Flame Breath 模式 ===
+            breathingFire = true;
+            setPixmap(facingRight ? spr_attack_R : spr_attack_L);
+            // 火焰動畫
+            animTimer++;
+            if (animTimer >= 8) {
+                animTimer = 0;
+                animFrame = 1 - animFrame;
+            }
+            // 設定火焰圖片
+            if (animFrame == 0) {
+                fireEffect->setPixmap(facingRight ? spr_breath_R1 : spr_breath_L1);
+            } else {
+                fireEffect->setPixmap(facingRight ? spr_breath_R2 : spr_breath_L2);
+            }
+            // 定位火焰（在本體前方）
+            if (facingRight) {
+                fireEffect->setPos(pixmap().width(), 0);
+            } else {
+                fireEffect->setPos(-fireEffect->pixmap().width(), 0);
+            }
+            fireEffect->setVisible(true);
+            if (attackTimer <= 0) {
+                isAttacking = false;
+                fireEffect->setVisible(false);
+            }
+        }
+        // 攻擊結束 → 恢復移動速度
+        if (!isAttacking) {
+            vx = facingRight ? ENEMY_SPEED : -ENEMY_SPEED;
+            fireEffect->setVisible(false);
         }
         return;
     }
-
     // 巡邏移動
     setPos(x() + vx, y());
-
-    if (x() <= patrolMinX) {
-        vx = ENEMY_SPEED;
-        facingRight = true;
-    }
-    if (x() + pixmap().width() >= patrolMaxX) {
-        vx = -ENEMY_SPEED;
-        facingRight = false;
-    }
-
+    if (x() <= patrolMinX) { vx = ENEMY_SPEED; facingRight = true; }
+    if (x() + pixmap().width() >= patrolMaxX) { vx = -ENEMY_SPEED; facingRight = false; }
     // 攻擊冷卻
     attackCooldown--;
     if (attackCooldown <= 0) {
         isAttacking = true;
-        attackTimer = 30; // 攻擊動畫持續 30 幀
+        attackTimer = 30;
         attackCooldown = HOTHEAD_FIRE_INTERVAL;
         vx = 0;
-    }
-
-    // 動畫
-    animTimer++;
-    if (animTimer >= 10) {
+        attackMode = 1 - attackMode;
+        animFrame = 0;
         animTimer = 0;
-        animFrame = 1 - animFrame;
     }
-    if (vx != 0) {
-        setPixmap(facingRight ? spr_walk_R : spr_walk_L);
+    // 走路動畫
+    animTimer++;
+    if (animTimer >= 10) { animTimer = 0; animFrame = 1 - animFrame; }
+    if (vx != 0) { setPixmap(facingRight ? spr_walk_R : spr_walk_L); }
+    else { setPixmap(facingRight ? spr_stop_R : spr_stop_L); }
+}
+
+bool HotHead::isBreathingFire() const {
+    return breathingFire;
+}
+QRectF HotHead::getBreathBox() const {
+    if (!breathingFire) return QRectF();
+    double range = 120;  // 噴火距離
+    if (facingRight) {
+        return QRectF(x() + pixmap().width(), y(), range, pixmap().height());
     } else {
-        setPixmap(facingRight ? spr_stop_R : spr_stop_L);
+        return QRectF(x() - range, y(), range, pixmap().height());
     }
 }
 

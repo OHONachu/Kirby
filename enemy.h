@@ -63,13 +63,20 @@ public:
     HotHead(double sx, double sy, double pMinX, double pMaxX);
     void updateEnemy() override;
     bool shouldShootFire(); // GameScene 會檢查是否要生成火球
-
+    bool isBreathingFire() const;   // 新：GameScene 用來檢查噴火判定
+    QRectF getBreathBox() const;    // 新：噴火傷害範圍
     QPixmap spr_fire_proj; // 火球圖片供 GameScene 使用
 private:
     QPixmap spr_walk_R, spr_walk_L;
     QPixmap spr_stop_R, spr_stop_L;
     QPixmap spr_attack_R, spr_attack_L;
+    // 新增：噴火圖片
+    QPixmap spr_breath_R1, spr_breath_L1;   // fire(2)
+    QPixmap spr_breath_R2, spr_breath_L2;   // fire(3)
     bool wantsToShoot;
+    bool breathingFire;     // 新：是否正在噴火
+    int attackMode;         // 新：0 = fireball, 1 = flame breath
+    QGraphicsPixmapItem *fireEffect;   // 新增：火焰特效物件
 };
 
 // ============ Sparky ============
@@ -84,6 +91,7 @@ private:
     QPixmap spr_walk_L1, spr_walk_L2;
     QPixmap spr_walk_R1, spr_walk_R2;
     QPixmap spr_attack1, spr_attack2;
+
     int sparkTimer;
     int jumpTimer;
     bool onGround;

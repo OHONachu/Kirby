@@ -40,17 +40,18 @@ void Projectile::updateProjectile() {
             setPixmap(animFrames[animFrame]);
         }
     }
-    double distance = qAbs(x() - originX);
-    if (!returning) {
-        if (distance >= maxDistance) {
-            vx = -vx;
-            returning = true;
-        }
-    }
-    else {
-        if ((vx > 0 && x() >= originX) || (vx < 0 && x() <= originX)) {
-            active = false;
-            setVisible(false);
+    if (type == PROJ_CUTTER) {
+        double distance = qAbs(x() - originX);
+        if (!returning) {
+            if (distance >= maxDistance) {
+                vx = -vx;
+                returning = true;
+            }
+        } else {
+            if ((vx > 0 && x() >= originX) || (vx < 0 && x() <= originX)) {
+                active = false;
+                setVisible(false);
+            }
         }
     }
 }
