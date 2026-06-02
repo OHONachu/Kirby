@@ -1,7 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>Dataset/background/game_over_continue.png</file>
-        <file>Dataset/background/game_over_quit.png</file>
         <file>Dataset/background/Stage1(1).png</file>
         <file>Dataset/background/Stage1(2).png</file>
         <file>Dataset/background/Stage1(3).png</file>
@@ -29,7 +27,6 @@
         <file>Dataset/item/goal_door.png</file>
         <file>Dataset/item/HP_0.png</file>
         <file>Dataset/item/HP_1.png</file>
-        <file>Dataset/item/life.png</file>
         <file>Dataset/item/Maxim Tomato.png</file>
         <file>Dataset/Kirby_fire/kirbyfire_attack_L.png</file>
         <file>Dataset/Kirby_fire/kirbyfire_attack_R.png</file>
@@ -148,5 +145,10 @@
         <file>Dataset/Kirby_cutter/kbck10.png</file>
         <file>Dataset/Kirby_cutter/kbck11.png</file>
         <file>Dataset/Kirby_cutter/kbck12.png</file>
+        <file>Dataset/item/live0.png</file>
+        <file>Dataset/item/live1.png</file>
+        <file>Dataset/item/live2.png</file>
+        <file>Dataset/background/gameover(2).png</file>
+        <file>Dataset/background/gameover(1).png</file>
     </qresource>
 </RCC>

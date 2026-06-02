@@ -39,7 +39,7 @@ public:
     void showGameOverScreen();
     void showClearScreen();
     void advanceClearScreen(Game *game);
-    void toggleGameOverSelection();
+    void changeGameOverSelection(int key);
     void confirmGameOverSelection(Game *game);
 
 private:

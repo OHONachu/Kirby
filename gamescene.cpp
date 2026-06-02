@@ -37,9 +37,10 @@ GameScene::GameScene(Game *g) : QGraphicsScene(g), game(g) {
     sparkBoard = loadAndScale(":/Dataset/Kirby_spark/Kirby_spark_board.png");
     cutterBoard = loadAndScale(":/Dataset/Kirby_cutter/cs.png");
 
-    // Game Over 畫面
-    gameOverContinuePix = loadPix(":/Dataset/background/game_over_continue.png");
-    gameOverQuitPix     = loadPix(":/Dataset/background/game_over_quit.png");
+
+    // Game Over 畫面 (對應你的新圖檔)
+    gameOverContinuePix = loadPix(":/Dataset/background/gameover(1).png");
+    gameOverQuitPix     = loadPix(":/Dataset/background/gameover(2).png");
 }
 
 GameScene::~GameScene() {}
@@ -1005,33 +1006,62 @@ void GameScene::showMenuScreen() {
 // ============ Game Over 畫面 ============
 void GameScene::showGameOverScreen() {
     clearStage();
-    setSceneRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-    gameOverSelection = 0; // 預設選 Continue
 
-    QPixmap goPix = gameOverContinuePix.scaled(WINDOW_WIDTH, WINDOW_HEIGHT, Qt::IgnoreAspectRatio);
+    // 1. 限制場景的物理範圍
+    setSceneRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    // 2. 徹底重置相機鏡頭 (解決跑圖的關鍵)
+    if (!views().isEmpty()) {
+        QGraphicsView *view = views().first();
+        view->setSceneRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT); // 強制 View 也套用此範圍
+        view->resetTransform(); // 重置任何可能的變形或位移
+        view->centerOn(WINDOW_WIDTH / 2.0, WINDOW_HEIGHT / 2.0); // 鏡頭精準對準畫面的正中央
+    }
+
+    gameOverSelection = 0; // 預設為 gameover(1)
+
+    // 3. 載入並拉伸圖片
+    QPixmap goPix = loadPix(":/Dataset/background/gameover(1).png");
+    goPix = goPix.scaled(WINDOW_WIDTH, WINDOW_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
     gameOverBg = new QGraphicsPixmapItem(goPix);
-    gameOverBg->setPos(0, 0);
-    gameOverBg->setZValue(0);
+    gameOverBg->setPos(0, 0); // 絕對綁定在 0,0
+    gameOverBg->setZValue(999); // 設為 999 確保圖層在最上方，不會被遮擋
     addItem(gameOverBg);
 }
 
-void GameScene::toggleGameOverSelection() {
-    gameOverSelection = 1 - gameOverSelection;
+void GameScene::changeGameOverSelection(int key) {
+    // 判斷按鍵並切換索引
+    if (key == Qt::Key_Up) {
+        gameOverSelection = 0;
+    } else if (key == Qt::Key_Down) {
+        gameOverSelection = 1;
+    }
+
+    // 更新圖片
     if (gameOverBg) {
         QPixmap pix = (gameOverSelection == 0) ? gameOverContinuePix : gameOverQuitPix;
-        gameOverBg->setPixmap(pix.scaled(WINDOW_WIDTH, WINDOW_HEIGHT, Qt::IgnoreAspectRatio));
+        gameOverBg->setPixmap(pix.scaled(WINDOW_WIDTH, WINDOW_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+
+        // 💡 強制確保位置依舊鎖死在 0,0
+        gameOverBg->setPos(0, 0);
     }
 }
-
 void GameScene::confirmGameOverSelection(Game *g) {
     if (gameOverSelection == 0) {
-        // Continue → 回到 Start Menu
+        // 選擇 gameover(1) 按 Enter -> 回到 stage1 且卡比恢復滿血滿命狀態
+        tomatoCollected = false;
+        oneUpCollected = false;
+
+        // 💡 呼叫 startGame()。因為上面執行過 clearStage()，
+        // startGame 內部重新 loadStage(1) 時，會幫你自動生成一隻全新、滿血滿命的卡比！
+        g->startGame();
+    }
+    else {
+        // 選擇 gameover(2) 按 Enter -> 回到 start 主選單畫面
         tomatoCollected = false;
         oneUpCollected = false;
         g->restartFromMenu();
-    } else {
-        // Quit → 關閉遊戲
-        qApp->quit();
     }
 }
 

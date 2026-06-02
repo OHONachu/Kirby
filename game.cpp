@@ -40,13 +40,15 @@ void Game::keyPressEvent(QKeyEvent *event) {
 
     // Game Over 畫面按鍵處理
     if (currentState == STATE_GAME_OVER) {
+        // 按上下鍵：強制切換絕對位置
         if (event->key() == Qt::Key_Up || event->key() == Qt::Key_Down) {
-            scene->toggleGameOverSelection();
+            scene->changeGameOverSelection(event->key());
         }
-        if (event->key() == Qt::Key_Return || event->key() == Qt::Key_X) {
+        // 按 Enter 或 X 鍵：確認目前的選擇
+        if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter || event->key() == Qt::Key_X) {
             scene->confirmGameOverSelection(this);
         }
-        return;
+        return; // 攔截按鍵，不讓卡比在背景亂動
     }
 
     // Clear 畫面按任意鍵回選單
