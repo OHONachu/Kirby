@@ -18,6 +18,12 @@ public:
 
     void updateProjectile();
     QRectF getHitbox() const;
+    double originX;
+    double maxDistance;
+    bool returning;
+    QVector<QPixmap> animFrames;
+    int animFrame;
+    int animTimer;
 };
 
 #endif // PROJECTILE_H

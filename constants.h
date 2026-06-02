@@ -7,14 +7,16 @@ const int WINDOW_HEIGHT = 1080;
 const int FRAME_WIDTH   = 1620;
 const int STAGE1_FRAMES = 3;
 const int STAGE2_FRAMES = 5;
-const int STAGE3_FRAMES = 3;
-const int STAGE4_FRAMES = 3;
 
 // ============ 圖片縮放 ============
 const int SPRITE_SCALE = 1;
+const int CK_W = 150;
+const int CK_H = 150;
+const int CKW_W = 180;  // 回力鏢小一點
+const int CKW_H = 180;
 
 // ============ 物理參數 ============
-const double GRAVITY         = 0.25;//重力
+const double GRAVITY         = 0.5;//重力
 const double MAX_FALL_SPEED  = 10.0;//終端速度
 const double KIRBY_SPEED     = 5.0;//水平速度
 const double KIRBY_JUMP_FORCE = -12.0;//往上跳
@@ -33,6 +35,7 @@ const double INHALE_RANGE     = 135.0 * SPRITE_SCALE;
 const double SPIT_STAR_SPEED  = 10.0;
 const int    FIRE_DURATION    = 45;
 const int    SPARK_DURATION   = 45;
+const int    CUTTER_DURATION   = 300;
 
 // ============ 敵人參數 ============
 const double ENEMY_SPEED          = 2.0;
@@ -70,7 +73,8 @@ enum KirbyState {
 enum AbilityType {
     ABILITY_NONE,// 沒有能力
     ABILITY_FIRE,// 火焰能力
-    ABILITY_SPARK// 電擊能力
+    ABILITY_SPARK,// 電擊能力
+    ABILITY_CUTTER// Cutter Knight
 };
 
 // ============ 敵人類型 ============
@@ -78,7 +82,8 @@ enum EnemyType {
     ENEMY_WADDLE_DEE,
     ENEMY_GORDO,// 海膽怪 (刺刺的那個)
     ENEMY_HOT_HEAD,// 火炎頭
-    ENEMY_SPARKY// 電擊怪
+    ENEMY_SPARKY,// 電擊怪
+    ENEMY_KNIGHT
 };
 
 // ============ 投射物類型 ============
@@ -86,7 +91,8 @@ enum ProjectileType {
     PROJ_SPIT_STAR,// 吐出的星星
     PROJ_FIREBALL,// 敵人吐的火球
     PROJ_FIRE_BREATH,// 卡比的噴火攻擊
-    PROJ_SPARK_FIELD// 卡比/敵人的電擊場
+    PROJ_SPARK_FIELD,// 卡比/敵人的電擊場
+    PROJ_CUTTER
 };
 
 #endif // CONSTANTS_H

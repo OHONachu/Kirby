@@ -88,5 +88,20 @@ private:
     int jumpTimer;
     bool onGround;
 };
+// ============ cutKnight ============
+class cutKnight : public Enemy{
+public:
+    cutKnight(double sx, double sy, double pMinX, double pMaxX);
+    void updateEnemy() override;
+    bool shouldShootCutter(); // GameScene 會檢查是否要生成
+    void setTargetX(double kirbyX);// 讓 GameScene 告訴他 Kirby 在哪
 
+    QVector<QPixmap> cutterFrames; // 火球圖片供 GameScene 使用
+private:
+    double targetX;
+    QPixmap spr_stop_R, spr_stop_L;
+    QVector<QPixmap> attackR, attackL;
+    bool wantsToShoot;
+
+};
 #endif // ENEMY_H

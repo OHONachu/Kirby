@@ -117,5 +117,36 @@
         <file>Dataset/background/stage4(1).png</file>
         <file>Dataset/background/stage4(2).png</file>
         <file>Dataset/background/stage4(3).png</file>
+        <file>Dataset/cutter knight/ck.png</file>
+        <file>Dataset/cutter knight/ck_attack_1_L.png</file>
+        <file>Dataset/cutter knight/ck_attack_1_R.png</file>
+        <file>Dataset/cutter knight/ck_attack_2_L.png</file>
+        <file>Dataset/cutter knight/ck_attack_2_R.png</file>
+        <file>Dataset/cutter knight/ck_attack_3_L.png</file>
+        <file>Dataset/cutter knight/ck_attack_3_R.png</file>
+        <file>Dataset/cutter knight/ck_attack_4_L.png</file>
+        <file>Dataset/cutter knight/ck_attack_4_R.png</file>
+        <file>Dataset/cutter knight/ck_stand_L.png</file>
+        <file>Dataset/cutter knight/ck_stand_R.png</file>
+        <file>Dataset/cutter knight/ckw.png</file>
+        <file>Dataset/cutter knight/ckw1.png</file>
+        <file>Dataset/cutter knight/ckw2.png</file>
+        <file>Dataset/cutter knight/ckw3.png</file>
+        <file>Dataset/cutter knight/ckw4.png</file>
+        <file>Dataset/Kirby_cutter/cs.png</file>
+        <file>Dataset/Kirby_cutter/kbck.png</file>
+        <file>Dataset/Kirby_cutter/kbck01.png</file>
+        <file>Dataset/Kirby_cutter/kbck1.png</file>
+        <file>Dataset/Kirby_cutter/kbck02.png</file>
+        <file>Dataset/Kirby_cutter/kbck03.png</file>
+        <file>Dataset/Kirby_cutter/kbck04.png</file>
+        <file>Dataset/Kirby_cutter/kbck05.png</file>
+        <file>Dataset/Kirby_cutter/kbck06.png</file>
+        <file>Dataset/Kirby_cutter/kbck07.png</file>
+        <file>Dataset/Kirby_cutter/kbck08.png</file>
+        <file>Dataset/Kirby_cutter/kbck09.png</file>
+        <file>Dataset/Kirby_cutter/kbck10.png</file>
+        <file>Dataset/Kirby_cutter/kbck11.png</file>
+        <file>Dataset/Kirby_cutter/kbck12.png</file>
     </qresource>
 </RCC>

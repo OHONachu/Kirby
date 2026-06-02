@@ -335,3 +335,81 @@ QRectF Sparky::getSparkBox() const {
                   pixmap().width() + expand * 2,
                   pixmap().height() + expand * 2);
 }
+cutKnight::cutKnight(double sx, double sy, double pMinX, double pMaxX)
+    : Enemy(ENEMY_KNIGHT, sx, sy, pMinX, pMaxX)
+{
+    canBeInhaled = true;
+    canBeDamaged = true;
+    grantedAbility = ABILITY_CUTTER;
+    vx = 0;
+    targetX = sx;
+    wantsToShoot = false;
+    attackCooldown = HOTHEAD_FIRE_INTERVAL;
+
+
+    spr_stop_R = loadAndScale(":/Dataset/cutter knight/ck_stand_R.png")
+                 .scaled(CK_W, CK_H, Qt::KeepAspectRatio, Qt::FastTransformation);
+    spr_stop_L = loadAndScale(":/Dataset/cutter knight/ck_stand_L.png")
+                 .scaled(CK_W, CK_H, Qt::KeepAspectRatio, Qt::FastTransformation);
+    for(int i = 1; i<=4; i++){
+        attackR.append(loadAndScale(QString(":/Dataset/cutter knight/ck_attack_%1_R.png").arg(i))
+                       .scaled(CK_W, CK_H, Qt::KeepAspectRatio, Qt::FastTransformation));
+        attackL.append(loadAndScale(QString(":/Dataset/cutter knight/ck_attack_%1_L.png").arg(i))
+                       .scaled(CK_W, CK_H, Qt::KeepAspectRatio, Qt::FastTransformation));
+    }
+    for (int i = 1; i <= 4; i++) {
+        cutterFrames.append(loadAndScale(QString(":/Dataset/cutter knight/ckw%1.png").arg(i))
+        .scaled(CKW_W, CKW_H, Qt::KeepAspectRatio, Qt::FastTransformation));
+    }
+    setPixmap(spr_stop_L);
+}
+
+void cutKnight::updateEnemy() {
+    if (!alive) return;
+
+    wantsToShoot = false;
+    if (targetX>x()){
+        facingRight = true;
+    }
+    else facingRight = false;
+
+    if (isAttacking) {
+        animTimer++;
+        if (animTimer >= 8) {
+            animTimer = 0;
+            animFrame++;
+        }
+
+        // 攻擊動畫
+        if (animFrame >= 4) {
+            isAttacking = false;
+            wantsToShoot = true; // 通知 GameScene 生成火球
+            animFrame = 0;
+        }
+        else{
+            setPixmap(facingRight ? attackR[animFrame] : attackL[animFrame]);
+        }
+        return;
+    }
+    setPixmap(facingRight ? spr_stop_R : spr_stop_L);
+
+    // 攻擊冷卻
+    attackCooldown--;
+    if (attackCooldown <= 0) {
+        isAttacking = true;
+        animFrame = 0;
+        animTimer = 0;
+        attackCooldown = 210;
+    }
+
+    // 動畫
+
+}
+void cutKnight::setTargetX(double kirbyX) {
+    targetX = kirbyX;
+}
+bool cutKnight::shouldShootCutter() {
+    bool result = wantsToShoot;
+    wantsToShoot = false;
+    return result;
+}

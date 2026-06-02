@@ -7,6 +7,11 @@ Projectile::Projectile(ProjectileType t, double sx, double sy, double velX, doub
     setPixmap(sprite);
     setPos(sx, sy);
     setZValue(8);
+    originX = sx;
+    maxDistance = 400;
+    returning = false;
+    animTimer = 0;
+    animFrame = 0;
 
     // 根據類型設定生命週期
     switch (type) {
@@ -14,6 +19,7 @@ Projectile::Projectile(ProjectileType t, double sx, double sy, double velX, doub
     case PROJ_FIREBALL:   lifetime = 150; break;
     case PROJ_FIRE_BREATH: lifetime = FIRE_DURATION; break;
     case PROJ_SPARK_FIELD: lifetime = SPARK_DURATION; break;
+    case PROJ_CUTTER: lifetime = CUTTER_DURATION; break;
     }
 }
 
@@ -25,6 +31,27 @@ void Projectile::updateProjectile() {
     if (lifetime <= 0) {
         active = false;
         setVisible(false);
+    }
+    if (type == PROJ_CUTTER && !animFrames.isEmpty()) {
+        animTimer++;
+        if (animTimer >= 4) {
+            animTimer = 0;
+            animFrame = (animFrame + 1) % animFrames.size();
+            setPixmap(animFrames[animFrame]);
+        }
+    }
+    double distance = qAbs(x() - originX);
+    if (!returning) {
+        if (distance >= maxDistance) {
+            vx = -vx;
+            returning = true;
+        }
+    }
+    else {
+        if ((vx > 0 && x() >= originX) || (vx < 0 && x() <= originX)) {
+            active = false;
+            setVisible(false);
+        }
     }
 }
 
