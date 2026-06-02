@@ -2,7 +2,7 @@ QT       += core gui widgets
 TARGET    = KirbyAdventure
 TEMPLATE  = app
 
-CONFIG   += c++11
+CONFIG   += c++11 resources_big
 
 SOURCES += \
     main.cpp \

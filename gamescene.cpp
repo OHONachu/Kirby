@@ -106,8 +106,12 @@ void GameScene::loadStage(int stageNum) {
     clearStage();
     currentStage = stageNum;
 
-    int totalWidth = (stageNum == 1) ? FRAME_WIDTH * STAGE1_FRAMES
-                                     : FRAME_WIDTH * STAGE2_FRAMES;
+    // 🌟 修改：根據關卡數決定場景總寬度 (Stage 3 有 3 個 frames)
+    int totalWidth = FRAME_WIDTH;
+    if (stageNum == 1)      totalWidth = FRAME_WIDTH * STAGE1_FRAMES;
+    else if (stageNum == 2) totalWidth = FRAME_WIDTH * STAGE2_FRAMES;
+    else if (stageNum == 3) totalWidth = FRAME_WIDTH * 3; // Stage 3 固定 3 個 frames
+
     setSceneRect(0, 0, totalWidth, WINDOW_HEIGHT);
     setBackgroundBrush(QBrush(QColor(135, 206, 235))); // 天空藍
 
@@ -118,16 +122,16 @@ void GameScene::loadStage(int stageNum) {
     }
     kirby->reset(100, FLOOR_Y - 300);
 
-    // 根據 Stage 配置
-    if (stageNum == 1) setupStage1();
-    else setupStage2();
+    // 🌟 修改：加上 Stage 3 的判斷
+    if (stageNum == 1)      setupStage1();
+    else if (stageNum == 2) setupStage2();
+    else if (stageNum == 3) setupStage3();
 
     // 設置 HUD
     setupHUD();
 
     deathTimer = 0;
 }
-
 // ============ 添加地板磚塊 ============
 void GameScene::addFloor(double fx, double fy, int count) {
     QPixmap floorPix = loadAndScale(":/Dataset/item/floor.png");
@@ -419,6 +423,94 @@ void GameScene::setupStage2() {
     hasGoal = true;
 }
 
+// ============ 🌟 新增：Stage 3 配置 (3 frames) ============
+void GameScene::setupStage3() {
+    double floorTileW = loadAndScale(":/Dataset/item/floor.png").width();
+    int tilesPerFrame = (int)(FRAME_WIDTH / floorTileW) + 1;
+
+    // === 載入 Stage 3 背景圖片 ===
+    for (int f = 0; f < 3; f++) {
+        // 動態產生檔名：Stage3(1).png, Stage3(2).png, Stage3(3).png
+        QString imagePath = QString(":/Dataset/background/stage3(%1).png").arg(f + 1);
+        QPixmap bgSky = loadPix(imagePath);
+        bgSky = bgSky.scaledToWidth(1620, Qt::SmoothTransformation);
+
+        double bottomY = WINDOW_HEIGHT - bgSky.height();
+        QGraphicsPixmapItem *bg = new QGraphicsPixmapItem(bgSky);
+        bg->setPos(f * 1620, bottomY);
+        bg->setZValue(0);
+        addItem(bg);
+        bgItems.append(bg);
+    }
+
+    // === Frame 3-1: 雙重懸崖與空中刺球 ===
+    // 建立分段地板，中間留兩個洞 (Hole) 考驗跳躍
+    addFloor(0, FLOOR_Y, 5);
+    addHole(5 * floorTileW, FLOOR_Y, 2 * floorTileW, 200); // 第一個洞
+
+    addFloor(7 * floorTileW, FLOOR_Y, 6);
+    addHole(13 * floorTileW, FLOOR_Y, 2 * floorTileW, 200); // 第二個洞
+
+    addFloor(15 * floorTileW, FLOOR_Y, tilesPerFrame - 15);
+
+    // 空中安全平台，幫助玩家安全越過陷阱
+    addPlatform(400, FLOOR_Y - 260, 3);
+    addPlatform(950, FLOOR_Y - 320, 2);
+
+    // 放一隻在平台上巡邏的 Waddle Dee 阻礙玩家
+    addEnemy(ENEMY_WADDLE_DEE, 500, FLOOR_Y - 260, 400, 600);
+    // 空中漂浮無法被吸入的 Gordo 刺球
+    addEnemy(ENEMY_GORDO, 1100, FLOOR_Y - 450, 0, 0);
+
+
+    // === Frame 3-2: 元素夾擊戰 + 補血番茄 ===
+    double f2x = FRAME_WIDTH;
+    addFloor(f2x, FLOOR_Y, tilesPerFrame); // 這一層是穩固的平地
+
+    // 置中的金字塔型高台
+    addBlock(f2x + 400, FLOOR_Y - 214);
+    addPlatform(f2x + 500, FLOOR_Y - 350, 4);
+    addBlock(f2x + 950, FLOOR_Y - 214);
+
+    // 左右兩邊分別派出一隻 Hot Head (火) 與 Sparky (電) 夾擊玩家
+    addEnemy(ENEMY_HOT_HEAD, f2x + 250, FLOOR_Y, f2x + 100, f2x + 450);
+    addEnemy(ENEMY_SPARKY, f2x + 1100, FLOOR_Y, f2x + 900, f2x + 1300);
+
+    // 在高台中央放置一個補血大番茄 (Maxim Tomato)
+    if (!tomatoCollected) {
+        QPixmap tomatoPix = loadAndScale(":/Dataset/item/Maxim Tomato.png");
+        maximTomato = new QGraphicsPixmapItem(tomatoPix);
+        double tomatoY = (FLOOR_Y - 350) - tomatoPix.height();
+        maximTomato->setPos(f2x + 650, tomatoY);
+        maximTomato->setZValue(5);
+        addItem(maximTomato);
+        tomatoRect = QRectF(f2x + 650, tomatoY, tomatoPix.width(), tomatoPix.height());
+    }
+
+
+    // === Frame 3-3: 終點前哨衝刺 ===
+    double f3x = FRAME_WIDTH * 2;
+    addFloor(f3x, FLOOR_Y, tilesPerFrame);
+
+    // 連續的階梯平台
+    addPlatform(f3x + 150, FLOOR_Y - 200, 2);
+    addPlatform(f3x + 400, FLOOR_Y - 320, 2);
+    addPlatform(f3x + 650, FLOOR_Y - 440, 2);
+
+    // 高空平台的防守敵人
+    addEnemy(ENEMY_WADDLE_DEE, f3x + 450, FLOOR_Y - 320, f3x + 400, f3x + 550);
+    // 地面上也有一隻 Hot Head 攔路
+    addEnemy(ENEMY_HOT_HEAD, f3x + 800, FLOOR_Y, f3x + 600, f3x + 1000);
+
+    // 設置關卡終點門 (Goal Door)
+    QPixmap goalPix = loadAndScale(":/Dataset/item/goal_door.png");
+    goalDoor = new QGraphicsPixmapItem(goalPix);
+    goalDoor->setPos(f3x + FRAME_WIDTH - 350, FLOOR_Y - goalPix.height());
+    goalDoor->setZValue(4);
+    addItem(goalDoor);
+    goalRect = QRectF(goalDoor->x(), goalDoor->y(), goalPix.width(), goalPix.height());
+    hasGoal = true;
+}
 // ============ HUD 設置 ============
 void GameScene::setupHUD() {
     // HP 顯示 (畫面下方)
@@ -580,8 +672,6 @@ void GameScene::checkCollisions() {
     checkProjectileCollisions();
     checkKirbyHole();
 }
-
-// ============ Kirby 地形碰撞 ============
 // ============ Kirby 地形碰撞 (完美貼地穩定版) ============
 void GameScene::checkKirbyTerrainCollision() {
     QRectF kb = kirby->getHitbox();
@@ -775,21 +865,26 @@ void GameScene::checkKirbyItemCollision() {
 void GameScene::checkKirbyPortalGoal(const QSet<int> &keys) {
     QRectF kb = kirby->getHitbox();
 
-    // Portal (Stage 1 → Stage 2)
+    // Stage 1 的傳送門 (進 Stage 2)
     if (hasPortal && portal && kb.intersects(portalRect)) {
         if (keys.contains(Qt::Key_Up)) {
             game->switchStage(2);
         }
     }
 
-    // Goal (Stage 2 → Clear)
+    // 終點門判定
     if (hasGoal && goalDoor && kb.intersects(goalRect)) {
         if (keys.contains(Qt::Key_Up)) {
-            game->showClear();
+            if (currentStage == 2) {
+                // 🌟 修改：如果原本在 Stage 2，按下 Up 就進入 Stage 3！
+                game->switchStage(3);
+            } else {
+                // 如果是 Stage 3 到了終點，就秀出爆機通關畫面 (CLEAR.jpg)
+                game->showClear();
+            }
         }
     }
 }
-
 // ============ 投射物碰撞 ============
 void GameScene::checkProjectileCollisions() {
     for (int i = projectiles.size() - 1; i >= 0; i--) {
@@ -915,7 +1010,7 @@ void GameScene::showClearScreen() {
     clearStep = 0; // 剛進通關畫面，設為步數 0
 
     // 載入第一張通關圖片 CLEAR.jpg
-    QPixmap clearPix = loadPix(":/Dataset/background/CLEAR.jpg");
+    QPixmap clearPix = loadPix(":/Dataset/background/CLEAR.png");
     clearPix = clearPix.scaled(WINDOW_WIDTH, WINDOW_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
     clearBg = new QGraphicsPixmapItem(clearPix);

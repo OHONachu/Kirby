@@ -111,5 +111,11 @@
         <file>Dataset/background/last2.png</file>
         <file>Dataset/background/CLEAR.png</file>
         <file>Dataset/background/last1.png</file>
+        <file>Dataset/background/stage3(1).png</file>
+        <file>Dataset/background/stage3(2).png</file>
+        <file>Dataset/background/stage3(3).png</file>
+        <file>Dataset/background/stage4(1).png</file>
+        <file>Dataset/background/stage4(2).png</file>
+        <file>Dataset/background/stage4(3).png</file>
     </qresource>
 </RCC>
