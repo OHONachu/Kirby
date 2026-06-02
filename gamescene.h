@@ -118,6 +118,7 @@ private:
     void setupStage1();
     void setupStage2();
     void setupStage3();
+    void setupStage4();
     void addFloor(double x, double y, int count);
     void addBlock(double x, double y);
     void addPlatform(double x, double y, int width);

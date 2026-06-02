@@ -111,6 +111,7 @@ void GameScene::loadStage(int stageNum) {
     if (stageNum == 1)      totalWidth = FRAME_WIDTH * STAGE1_FRAMES;
     else if (stageNum == 2) totalWidth = FRAME_WIDTH * STAGE2_FRAMES;
     else if (stageNum == 3) totalWidth = FRAME_WIDTH * 3; // Stage 3 固定 3 個 frames
+    else if (stageNum == 4) totalWidth = FRAME_WIDTH * STAGE4_FRAMES;
 
     setSceneRect(0, 0, totalWidth, WINDOW_HEIGHT);
     setBackgroundBrush(QBrush(QColor(135, 206, 235))); // 天空藍
@@ -126,6 +127,7 @@ void GameScene::loadStage(int stageNum) {
     if (stageNum == 1)      setupStage1();
     else if (stageNum == 2) setupStage2();
     else if (stageNum == 3) setupStage3();
+    else if (stageNum == 4) setupStage4();
 
     // 設置 HUD
     setupHUD();
@@ -414,7 +416,7 @@ void GameScene::setupStage2() {
     addEnemy(ENEMY_HOT_HEAD, f5x + 700, FLOOR_Y, f5x + 500, f5x + 1100);
 
     // Goal (終點門)
-    QPixmap goalPix = loadAndScale(":/Dataset/item/goal_door.png");
+    QPixmap goalPix = loadAndScale(":/Dataset/item/door.png");
     goalDoor = new QGraphicsPixmapItem(goalPix);
     goalDoor->setPos(f5x + FRAME_WIDTH - 400, FLOOR_Y - goalPix.height());
     goalDoor->setZValue(4);
@@ -501,6 +503,77 @@ void GameScene::setupStage3() {
     addEnemy(ENEMY_WADDLE_DEE, f3x + 450, FLOOR_Y - 320, f3x + 400, f3x + 550);
     // 地面上也有一隻 Hot Head 攔路
     addEnemy(ENEMY_HOT_HEAD, f3x + 800, FLOOR_Y, f3x + 600, f3x + 1000);
+
+    // 設置關卡終點門 (Goal Door)
+    QPixmap goalPix = loadAndScale(":/Dataset/item/goal_door.png");
+    goalDoor = new QGraphicsPixmapItem(goalPix);
+    goalDoor->setPos(f3x + FRAME_WIDTH - 350, FLOOR_Y - goalPix.height());
+    goalDoor->setZValue(4);
+    addItem(goalDoor);
+    goalRect = QRectF(goalDoor->x(), goalDoor->y(), goalPix.width(), goalPix.height());
+    hasGoal = true;
+}
+
+// ============ Stage 4 配置 (3 frames) ============
+void GameScene::setupStage4() {
+    double floorTileW = loadAndScale(":/Dataset/item/floor.png").width();
+    int tilesPerFrame = (int)(FRAME_WIDTH / floorTileW) + 1;
+
+    // === 載入 Stage 4 背景圖片 ===
+    for (int f = 0; f < 3; f++) {
+        QString imagePath = QString(":/Dataset/background/stage4(%1).png").arg(f + 1);
+        QPixmap bgSky = loadPix(imagePath);
+        bgSky = bgSky.scaledToWidth(1620, Qt::SmoothTransformation);
+
+        double bottomY = WINDOW_HEIGHT - bgSky.height();
+        QGraphicsPixmapItem *bg = new QGraphicsPixmapItem(bgSky);
+        bg->setPos(f * 1620, bottomY);
+        bg->setZValue(0);
+        addItem(bg);
+        bgItems.append(bg);
+    }
+
+    // === Frame 4-1: 開場深淵與精準跳躍 ===
+    addFloor(0, FLOOR_Y, 4);
+    addHole(4 * floorTileW, FLOOR_Y, 2 * floorTileW, 200);
+
+    addFloor(6 * floorTileW, FLOOR_Y, 2);
+    addHole(8 * floorTileW, FLOOR_Y, 3 * floorTileW, 200);
+
+    addFloor(11 * floorTileW, FLOOR_Y, tilesPerFrame - 11);
+
+    // 磚頭作為高空落腳點
+    addBlock(5 * floorTileW, FLOOR_Y - 250);
+    addBlock(9 * floorTileW, FLOOR_Y - 300);
+
+    // 在深淵處放置 Gordo 增加跳躍壓力
+    addEnemy(ENEMY_GORDO, 5 * floorTileW, FLOOR_Y - 150, 0, 0);
+    addEnemy(ENEMY_GORDO, 9 * floorTileW, FLOOR_Y - 450, 0, 0);
+
+    // === Frame 4-2: 元素夾擊戰 ===
+    double f2x = FRAME_WIDTH;
+    addFloor(f2x, FLOOR_Y, tilesPerFrame);
+
+    addPlatform(f2x + 300, FLOOR_Y - 200, 3);
+    addPlatform(f2x + 800, FLOOR_Y - 350, 3);
+    addPlatform(f2x + 1300, FLOOR_Y - 200, 3);
+
+    // 安排熱氣頭與電擊怪
+    addEnemy(ENEMY_HOT_HEAD, f2x + 400, FLOOR_Y, f2x + 200, f2x + 600);
+    addEnemy(ENEMY_SPARKY, f2x + 850, FLOOR_Y - 350, f2x + 800, f2x + 1000);
+    addEnemy(ENEMY_HOT_HEAD, f2x + 1200, FLOOR_Y, f2x + 1100, f2x + 1400);
+
+    // === Frame 4-3: 通往勝利的防守線 ===
+    double f3x = FRAME_WIDTH * 2;
+    addFloor(f3x, FLOOR_Y, tilesPerFrame);
+
+    addPlatform(f3x + 200, FLOOR_Y - 250, 2);
+    addBlock(f3x + 500, FLOOR_Y - 300);
+    addPlatform(f3x + 700, FLOOR_Y - 350, 2);
+
+    addEnemy(ENEMY_WADDLE_DEE, f3x + 200, FLOOR_Y - 250, f3x + 150, f3x + 350);
+    addEnemy(ENEMY_WADDLE_DEE, f3x + 700, FLOOR_Y - 350, f3x + 650, f3x + 850);
+    addEnemy(ENEMY_WADDLE_DEE, f3x + 900, FLOOR_Y, f3x + 800, f3x + 1200);
 
     // 設置關卡終點門 (Goal Door)
     QPixmap goalPix = loadAndScale(":/Dataset/item/goal_door.png");
@@ -876,10 +949,13 @@ void GameScene::checkKirbyPortalGoal(const QSet<int> &keys) {
     if (hasGoal && goalDoor && kb.intersects(goalRect)) {
         if (keys.contains(Qt::Key_Up)) {
             if (currentStage == 2) {
-                // 🌟 修改：如果原本在 Stage 2，按下 Up 就進入 Stage 3！
+                // 如果原本在 Stage 2，按下 Up 就進入 Stage 3
                 game->switchStage(3);
+            } else if (currentStage == 3) {
+                // 如果原本在 Stage 3，按下 Up 就進入 Stage 4
+                game->switchStage(4);
             } else {
-                // 如果是 Stage 3 到了終點，就秀出爆機通關畫面 (CLEAR.jpg)
+                // 如果是 Stage 4 到了終點，就秀出爆機通關畫面 (CLEAR.jpg)
                 game->showClear();
             }
         }

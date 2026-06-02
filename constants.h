@@ -7,6 +7,8 @@ const int WINDOW_HEIGHT = 1080;
 const int FRAME_WIDTH   = 1620;
 const int STAGE1_FRAMES = 3;
 const int STAGE2_FRAMES = 5;
+const int STAGE3_FRAMES = 3;
+const int STAGE4_FRAMES = 3;
 
 // ============ 圖片縮放 ============
 const int SPRITE_SCALE = 1;
