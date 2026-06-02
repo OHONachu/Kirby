@@ -1,0 +1,34 @@
+# Qt Creator build directories
+build/
+build-*/
+
+# Qt Creator project user settings
+*.pro.user
+*.pro.user.*
+
+# Compiled Object files
+*.o
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Qt specific files
+Makefile
+Makefile.*
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+qmake_qmake_qm_files.qrc
+.qmake.stash
