@@ -42,6 +42,7 @@ const double SPIT_STAR_SPEED  = 10.0;
 const int    FIRE_DURATION    = 45;
 const int    SPARK_DURATION   = 45;
 const int    CUTTER_DURATION   = 300;
+const int    BEAM_DURATION   = 300;
 
 // ============ 敵人參數 ============
 const double ENEMY_SPEED          = 2.0;

@@ -123,6 +123,50 @@ void Kirby::loadSprites() {
     for (int i = 1; i <= 3; i++) {
         spr_spark_attack.append(loadAndScale(sparkBase + QString("Kirby_spark_attack(%1).png").arg(i)));
     }
+    // ====== Cutter Ability Sprites ======
+    QString cutterBase = ":/Dataset/Kirby_cutter/";
+    spr_cutter_stand_R = loadAndScale(cutterBase + "Kirby_cutter_stop_R.png");
+    spr_cutter_stand_L = loadAndScale(cutterBase + "Kirby_cutter_stop_L.png");
+
+    for (int i = 1; i <= 4; i++) {
+        spr_cutter_walk_R.append(loadAndScale(cutterBase + QString("Kirby_cutter_run(%1)_R.png").arg(i)));
+        spr_cutter_walk_L.append(loadAndScale(cutterBase + QString("Kirby_cutter_run(%1)_L.png").arg(i)));
+    }
+
+    spr_cutter_fly1_R = loadAndScale(cutterBase + "Kirby_cutter_fly(1)_R.png");
+    spr_cutter_fly1_L = loadAndScale(cutterBase + "Kirby_cutter_fly(1)_L.png");
+    spr_cutter_fly2_R = loadAndScale(cutterBase + "Kirby_cutter_fly(2)_R.png");
+    spr_cutter_fly2_L = loadAndScale(cutterBase + "Kirby_cutter_fly(2)_L.png");
+
+    spr_cutter_down_R = loadAndScale(cutterBase + "Kirby_cutter_down_R.png");
+    spr_cutter_down_L = loadAndScale(cutterBase + "Kirby_cutter_down_L.png");
+
+    for (int i = 1; i <= 2; i++) {
+        spr_cutter_attack_R.append(loadAndScale(sparkBase + QString("Kirby_cutter_attack(%1)_R.png").arg(i)));
+        spr_cutter_attack_L.append(loadAndScale(sparkBase + QString("Kirby_cutter_attack(%1)_L.png").arg(i)));
+    }
+    // ====== Doo Ability Sprites ======
+    QString dooBase = ":/Dataset/Kirby_doo/";
+    spr_doo_stand_R = loadAndScale(dooBase + "Kirby_doo_stop_R.png");
+    spr_doo_stand_L = loadAndScale(dooBase + "Kirby_doo_stop_L.png");
+
+    for (int i = 1; i <= 4; i++) {
+        spr_doo_walk_R.append(loadAndScale(dooBase + QString("Kirby_doo_run(%1)_R.png").arg(i)));
+        spr_doo_walk_L.append(loadAndScale(dooBase + QString("Kirby_doo_run(%1)_L.png").arg(i)));
+    }
+
+    spr_doo_fly1_R = loadAndScale(dooBase + "Kirby_doo_fly(1)_R.png");
+    spr_doo_fly1_L = loadAndScale(dooBase + "Kirby_doo_fly(1)_L.png");
+    spr_doo_fly2_R = loadAndScale(dooBase + "Kirby_doo_fly(2)_R.png");
+    spr_doo_fly2_L = loadAndScale(dooBase + "Kirby_doo_fly(2)_L.png");
+
+    spr_doo_down_R = loadAndScale(dooBase + "Kirby_doo_down_R.png");
+    spr_doo_down_L = loadAndScale(dooBase + "Kirby_doo_down_L.png");
+
+    for (int i = 1; i <= 2; i++) {
+        spr_doo_attack_R.append(loadAndScale(dooBase + QString("Kirby_doo_attack(%1)_R.png").arg(i)));
+        spr_doo_attack_L.append(loadAndScale(dooBase + QString("Kirby_doo_attack(%1)_L.png").arg(i)));
+    }
 }
 
 // ============ 主更新 (每幀呼叫) ============
@@ -336,8 +380,8 @@ void Kirby::updateSprite() {
             current = facingRight ? spr_fire_attack_R[idx] : spr_fire_attack_L[idx];
         } else if (state == KIRBY_HOVERING) {
             current = (animFrame % 2 == 0)
-                ? (facingRight ? spr_fire_fly1_R : spr_fire_fly1_L)
-                : (facingRight ? spr_fire_fly2_R : spr_fire_fly2_L);
+                    ? (facingRight ? spr_fire_fly1_R : spr_fire_fly1_L)
+                    : (facingRight ? spr_fire_fly2_R : spr_fire_fly2_L);
         } else if (state == KIRBY_SQUATTING) {
             current = facingRight ? spr_fire_down_R : spr_fire_down_L;
         } else if (state == KIRBY_WALKING) {
@@ -353,8 +397,8 @@ void Kirby::updateSprite() {
             current = spr_spark_attack[idx];
         } else if (state == KIRBY_HOVERING) {
             current = (animFrame % 2 == 0)
-                ? (facingRight ? spr_spark_fly1_R : spr_spark_fly1_L)
-                : (facingRight ? spr_spark_fly2_R : spr_spark_fly2_L);
+                    ? (facingRight ? spr_spark_fly1_R : spr_spark_fly1_L)
+                    : (facingRight ? spr_spark_fly2_R : spr_spark_fly2_L);
         } else if (state == KIRBY_SQUATTING) {
             current = facingRight ? spr_spark_down_R : spr_spark_down_L;
         } else if (state == KIRBY_WALKING) {
@@ -362,6 +406,40 @@ void Kirby::updateSprite() {
             current = facingRight ? spr_spark_walk_R[idx] : spr_spark_walk_L[idx];
         } else {
             current = facingRight ? spr_spark_stand_R : spr_spark_stand_L;
+        }
+    } else if(ability == ABILITY_CUTTER){
+        // === CUTTER Ability Sprites ===
+        if (isAttacking) {
+            int idx = animFrame % spr_cutter_attack_R.size();
+            current = facingRight ? spr_cutter_attack_R[idx] : spr_cutter_attack_L[idx];
+        } else if (state == KIRBY_HOVERING) {
+            current = (animFrame % 2 == 0)
+                    ? (facingRight ? spr_cutter_fly1_R : spr_cutter_fly1_L)
+                    : (facingRight ? spr_cutter_fly2_R : spr_cutter_fly2_L);
+        } else if (state == KIRBY_SQUATTING) {
+            current = facingRight ? spr_cutter_down_R : spr_cutter_down_L;
+        } else if (state == KIRBY_WALKING) {
+            int idx = animFrame % spr_cutter_walk_R.size();
+            current = facingRight ? spr_cutter_walk_R[idx] : spr_cutter_walk_L[idx];
+        } else {
+            current = facingRight ? spr_cutter_stand_R : spr_cutter_stand_L;
+        }
+    } else if(ability == ABILITY_BEAM){
+        // === CUTTER Ability Sprites ===
+        if (isAttacking) {
+            int idx = animFrame % spr_doo_attack_R.size();
+            current = facingRight ? spr_doo_attack_R[idx] : spr_doo_attack_L[idx];
+        } else if (state == KIRBY_HOVERING) {
+            current = (animFrame % 2 == 0)
+                    ? (facingRight ? spr_doo_fly1_R : spr_doo_fly1_L)
+                    : (facingRight ? spr_doo_fly2_R : spr_doo_fly2_L);
+        } else if (state == KIRBY_SQUATTING) {
+            current = facingRight ? spr_doo_down_R : spr_doo_down_L;
+        } else if (state == KIRBY_WALKING) {
+            int idx = animFrame % spr_doo_walk_R.size();
+            current = facingRight ? spr_doo_walk_R[idx] : spr_doo_walk_L[idx];
+        } else {
+            current = facingRight ? spr_doo_stand_R : spr_doo_stand_L;
         }
     } else {
         // === Normal Sprites ===
@@ -371,8 +449,8 @@ void Kirby::updateSprite() {
             current = facingRight ? spr_inhale_R : spr_inhale_L;
         } else if (state == KIRBY_HOVERING) {
             current = (animFrame % 2 == 0)
-                ? (facingRight ? spr_fly1_R : spr_fly1_L)
-                : (facingRight ? spr_fly2_R : spr_fly2_L);
+                    ? (facingRight ? spr_fly1_R : spr_fly1_L)
+                    : (facingRight ? spr_fly2_R : spr_fly2_L);
         } else if (state == KIRBY_JUMPING) {
             // 根據垂直速度 (vy) 來決定播放哪一個跳躍/下落影格，呈現真實物理的下墜過渡效果
             int idx = 0;
@@ -437,6 +515,10 @@ void Kirby::doSwallow() {
         ability = ABILITY_FIRE;
     } else if (swallowedEnemy == ENEMY_SPARKY) {
         ability = ABILITY_SPARK;
+    } else if (swallowedEnemy == ENEMY_KNIGHT) {
+        ability = ABILITY_CUTTER;
+    } else if(swallowedEnemy == ENEMY_WADDLE_DOO){
+        ability == ABILITY_BEAM;
     }
     // Waddle Dee 等無能力敵人 → 回 Normal
 
@@ -462,7 +544,12 @@ void Kirby::startAbilityAttack() {
         attackTimer = FIRE_DURATION;
     } else if (ability == ABILITY_SPARK) {
         attackTimer = SPARK_DURATION;
+    } else if (ability == ABILITY_CUTTER) {
+        attackTimer = CUTTER_DURATION;
+    }else if (ability == ABILITY_BEAM) {
+        attackTimer = BEAM_DURATION;
     }
+
     animFrame = 0;
 }
 
@@ -562,6 +649,28 @@ QRectF Kirby::getAttackBox() const {
         return QRectF(x() - expand, y() - expand,
                       pixmap().width() + expand * 2,
                       pixmap().height() + expand * 2);
+    } else if (ability == ABILITY_CUTTER) {
+        // Cutter: 前方的彎刀揮砍或飛行範圍
+        double aw = 150; // 距離稍短於火焰 (假設為近戰或剛擲出的範圍)
+        double ah = pixmap().height() * 0.4; // 高度較扁，符合刀刃形狀
+        double ay = y() + pixmap().height() * 0.3; // 位於卡比的中間偏下位置
+        if (facingRight) {
+            return QRectF(x() + pixmap().width(), ay, aw, ah);
+        } else {
+            return QRectF(x() - aw, ay, aw, ah);
+        }
+    } else if (ability == ABILITY_BEAM) {
+        // Beam: 從上到下的鞭狀弧形攻擊範圍
+        double aw = 130; // 寬度適中
+        double ah = pixmap().height() * 1.5; // 碰撞箱比卡比還要高，以涵蓋從頭頂揮下來的弧度
+        double ay = y() - pixmap().height() * 0.25; // 起點從卡比頭部上方開始
+
+        // 光束鞭打時通常會稍微貼近卡比本身，所以 X 軸做了一點向內縮的偏移重疊
+        if (facingRight) {
+            return QRectF(x() + pixmap().width() * 0.3, ay, aw, ah);
+        } else {
+            return QRectF(x() - aw + pixmap().width() * 0.7, ay, aw, ah);
+        }
     }
     return QRectF();
 }
