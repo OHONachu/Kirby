@@ -430,7 +430,7 @@ void GameScene::setupStage2() {
     addEnemy(ENEMY_HOT_HEAD, f5x + 700, FLOOR_Y, f5x + 500, f5x + 1100);
 
     // Goal (終點門)
-    QPixmap goalPix = loadAndScale(":/Dataset/item/goal_door.png");
+    QPixmap goalPix = loadAndScale(":/Dataset/item/door.png");
     goalDoor = new QGraphicsPixmapItem(goalPix);
     goalDoor->setPos(f5x + FRAME_WIDTH - 400, FLOOR_Y - goalPix.height());
     goalDoor->setZValue(4);
@@ -606,7 +606,7 @@ void GameScene::setupHUD() {
 // ============ HUD 更新 ============
 void GameScene::updateHUD() {
     if (!kirby || !game) return;
-
+    if (!abilityIcon) return;
     // 取得當前視口左上角（用於固定 HUD 位置）
     QPointF viewTopLeft = game->mapToScene(0, 0);
 
