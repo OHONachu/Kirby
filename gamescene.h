@@ -30,7 +30,7 @@ public:
     explicit GameScene(Game *game);
     ~GameScene();
 
-    void loadStage(int stageNum);
+    void loadStage(int stageNum, bool isNewGame = false);
     void clearStage();
     void updateGame(const QSet<int> &keys);
 

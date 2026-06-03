@@ -112,7 +112,7 @@ void GameScene::clearStage() {
 }
 
 // ============ 載入關卡 ============
-void GameScene::loadStage(int stageNum) {
+void GameScene::loadStage(int stageNum, bool isNewGame) {
     clearStage();
     currentStage = stageNum;
 
@@ -131,8 +131,7 @@ void GameScene::loadStage(int stageNum) {
         kirby = new Kirby();
         addItem(kirby);
     }
-    // 進入新遊戲(Stage 1)時做全重置，否則(過關切換關卡)僅作軟重置保留血量與能力
-    bool isNewGame = (stageNum == 1);
+    // 進入新遊戲時做全重置，否則(過關切換關卡或死亡重生)僅作軟重置保留前置的重置狀態
     if (isNewGame) {
         kirby->lives = KIRBY_MAX_LIVES;
     }
@@ -323,7 +322,6 @@ void GameScene::setupStage1() {
     addEnemy(ENEMY_WADDLE_DEE, f3x + 300, FLOOR_Y, f3x + 100, f3x + 600);
     addEnemy(ENEMY_WADDLE_DEE, f3x + 700, FLOOR_Y, f3x + 600, f3x + 1100);
     // 道具 - Maxim Tomato（Stage 1 放置）
-    // 道具 - Maxim Tomato（Stage 1 放置）
     if (!tomatoCollected) {
         QPixmap tomatoPix = loadAndScale(":/Dataset/item/Maxim Tomato.png");
         maximTomato = new QGraphicsPixmapItem(tomatoPix);
@@ -428,10 +426,10 @@ void GameScene::setupStage2() {
     addEnemy(ENEMY_SPARKY, f4x + 900, FLOOR_Y, f4x + 700, f4x + 1300);
     // 1UP
     if (!oneUpCollected) {
-        QPixmap oneUpPix = loadAndScale("Dataset/item/1UP.png");
+        QPixmap oneUpPix = loadAndScale(":/Dataset/item/1UP.png");
         oneUpItem = new QGraphicsPixmapItem(oneUpPix);
         oneUpItem->setPos(f4x + 750, FLOOR_Y - 420);
-        oneUpItem->setZValue(5);
+        oneUpItem->setZValue(10);
         addItem(oneUpItem);
         oneUpRect = QRectF(f4x + 750, FLOOR_Y - 420, oneUpPix.width(), oneUpPix.height());
     }
@@ -509,15 +507,7 @@ void GameScene::setupStage3() {
     addEnemy(ENEMY_SPARKY, f2x + 1100, FLOOR_Y, f2x + 900, f2x + 1300);
 
     // 在高台中央放置一個補血大番茄 (Maxim Tomato)
-    if (!tomatoCollected) {
-        QPixmap tomatoPix = loadAndScale(":/Dataset/item/Maxim Tomato.png");
-        maximTomato = new QGraphicsPixmapItem(tomatoPix);
-        double tomatoY = (FLOOR_Y - 350) - tomatoPix.height();
-        maximTomato->setPos(f2x + 650, tomatoY);
-        maximTomato->setZValue(5);
-        addItem(maximTomato);
-        tomatoRect = QRectF(f2x + 650, tomatoY, tomatoPix.width(), tomatoPix.height());
-    }
+    // 已依照要求，將 Stage 3 的 Maxim Tomato 刪除，讓全遊戲只剩下一顆
 
 
     // === Frame 3-3: 終點前哨衝刺 ===

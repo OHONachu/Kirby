@@ -86,7 +86,7 @@ void Game::showMenu() {
 void Game::startGame() {
     currentState = STATE_PLAYING;
     currentStage = 1;
-    scene->loadStage(1);
+    scene->loadStage(1, true); // 標記為新遊戲，重置生命數
     gameTimer->start(GAME_TIMER_INTERVAL);
 }
 
