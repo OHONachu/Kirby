@@ -268,14 +268,30 @@ void Kirby::handleInput(const QSet<int> &keys) {
             stopInhale();
         }
     }
+
+    // === 如果在空中且不是其他特殊狀態，強制進入跳躍(下落)狀態 ===
+    if (!onGround && state != KIRBY_HOVERING && state != KIRBY_ATTACKING &&
+            state != KIRBY_INHALING && state != KIRBY_MOUTHFUL) {
+        state = KIRBY_JUMPING;
+    }
 }
 
 // ============ 物理 ============
 void Kirby::applyPhysics() {
     // 重力
     if (!onGround) {
-        vy += GRAVITY;
-        if (vy > MAX_FALL_SPEED) vy = MAX_FALL_SPEED;
+        if (vy > 0) {
+            // 下降階段：重力加速度變強（1.5 倍），呈現越掉越快的沉重下墜感
+            vy += GRAVITY * 1.5;
+        } else {
+            // 上升階段：維持原本的重力
+            vy += GRAVITY;
+        }
+
+        // 放寬最高掉落速度的限制，讓卡比有空間可以「加速」到更快的速度
+        if (vy > MAX_FALL_SPEED * 1.8) {
+            vy = MAX_FALL_SPEED * 1.8;
+        }
     }
 
     // 更新位置
@@ -351,7 +367,16 @@ void Kirby::updateSprite() {
                 ? (facingRight ? spr_fly1_R : spr_fly1_L)
                 : (facingRight ? spr_fly2_R : spr_fly2_L);
         } else if (state == KIRBY_JUMPING) {
-            int idx = animFrame % spr_jump.size();
+            // 根據垂直速度 (vy) 來決定播放哪一個跳躍/下落影格，呈現真實物理的下墜過渡效果
+            int idx = 0;
+            if (vy < -2.0) {
+                idx = 0; // 上升中
+            } else if (vy >= -2.0 && vy <= 2.0) {
+                idx = 1; // 頂點滯空
+            } else {
+                idx = 2; // 下墜中
+            }
+            if (idx >= spr_jump.size()) idx = spr_jump.size() - 1;
             current = spr_jump[idx];
         } else if (state == KIRBY_SQUATTING) {
             current = facingRight ? spr_down_R : spr_down_L;
