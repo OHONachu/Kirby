@@ -73,9 +73,10 @@ void Kirby::loadSprites() {
     spr_inhale_L = loadAndScale(base + "kirby_attack_L.png");
 
     // Normal - 飽足 (Mouthful)
-    spr_mouthful_R = loadAndScale(base + "kirby_attack_star_R(1).png");
-    spr_mouthful_L = loadAndScale(base + "kirby_attack_star_L(1).png");
-
+    spr_mouthful_R = loadAndScale(base + "Kirby_mouth_L.png");
+    spr_mouthful_R = spr_mouthful_R.scaled(spr_mouthful_R.size() * 0.5, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    spr_mouthful_L = loadAndScale(base + "Kirby_mouth_R.png");
+    spr_mouthful_L = spr_mouthful_L.scaled(spr_mouthful_L.size() * 0.5, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     // 星星彈
     spr_star = loadAndScale(base + "kirby_attack_star(2).png");
     QSize targetSizespr_stand_R = spr_stand_R.size();

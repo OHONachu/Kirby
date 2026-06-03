@@ -198,5 +198,7 @@
         <file>Dataset/Kirby_cutter/Kirby_cutter_run(4)_R.png</file>
         <file>Dataset/Kirby_cutter/Kirby_cutter_stop_L.png</file>
         <file>Dataset/Kirby_cutter/Kirby_cutter_stop_R.png</file>
+        <file>Dataset/Kirby_normal/Kirby_mouth_R.png</file>
+        <file>Dataset/Kirby_normal/Kirby_mouth_L.png</file>
     </qresource>
 </RCC>
