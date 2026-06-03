@@ -67,6 +67,7 @@ public:
     bool canBeHurt() const;
 
     bool upKeyReleased;
+    bool xKeyReleased;
 private:
     // ====== Sprites ======
     // Normal

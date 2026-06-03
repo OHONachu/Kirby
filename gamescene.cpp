@@ -33,10 +33,11 @@ GameScene::GameScene(Game *g) : QGraphicsScene(g), game(g) {
     hpFullPix  = loadAndScale(":/Dataset/item/HP_1.png");
     hpEmptyPix = loadAndScale(":/Dataset/item/HP_0.png");
 
-    // 🌟 改為載入 live0, live1, live2 三張生命標示圖片
-    live0Pix   = loadAndScale(":/Dataset/item/live0.png");
-    live1Pix   = loadAndScale(":/Dataset/item/live1.png");
-    live2Pix   = loadAndScale(":/Dataset/item/live2.png");
+    // 🌟 改為載入 live0, live1, live2 三張生命標示圖片，並強制調整為 hpFullPix 的 3 倍寬
+    int targetLiveWidth = hpFullPix.width() * 3;
+    live0Pix   = loadPix(":/Dataset/item/live0.png").scaledToWidth(targetLiveWidth, Qt::SmoothTransformation);
+    live1Pix   = loadPix(":/Dataset/item/live1.png").scaledToWidth(targetLiveWidth, Qt::SmoothTransformation);
+    live2Pix   = loadPix(":/Dataset/item/live2.png").scaledToWidth(targetLiveWidth, Qt::SmoothTransformation);
     lifeIconItem = nullptr; // 初始設為空指標
     fireBoard  = loadAndScale(":/Dataset/Kirby_fire/kirbyfire_board.png");
     sparkBoard = loadAndScale(":/Dataset/Kirby_spark/Kirby_spark_board.png");
@@ -635,11 +636,11 @@ void GameScene::updateHUD() {
     // 根據目前的命數選擇對應的圖片
     QPixmap currentLivePix;
     if (kirby->lives == 2) {
-        currentLivePix = live2Pix;
-    } else if (kirby->lives == 1) {
         currentLivePix = live1Pix;
-    } else {
+    } else if (kirby->lives == 1) {
         currentLivePix = live0Pix;
+    } else {
+        currentLivePix = live2Pix;
     }
 
     // 建立新圖片並設定座標

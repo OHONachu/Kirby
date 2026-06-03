@@ -23,7 +23,8 @@ Kirby::Kirby() {
     setPixmap(spr_stand_R);
     setZValue(10); // Kirby 顯示在最上層
 
-    bool upKeyReleased = true;
+    upKeyReleased = true;
+    xKeyReleased = true;
 }
 
 // ============ 載入並縮放圖片 ============
@@ -171,9 +172,15 @@ void Kirby::handleInput(const QSet<int> &keys) {
 
         // X = 吐出星星彈
         if (keys.contains(Qt::Key_X)) {
-            doSpit();
-            return;
+            if (xKeyReleased) {
+                doSpit();
+                xKeyReleased = false;
+                return;
+            }
+        } else {
+            xKeyReleased = true;
         }
+
         // Down = 吞下
         if (keys.contains(Qt::Key_Down)) {
             doSwallow();
@@ -418,6 +425,7 @@ void Kirby::swallowEnemy(EnemyType type) {
     swallowedEnemy = type;
     inhaling = false;
     state = KIRBY_MOUTHFUL;
+    xKeyReleased = false; // 強制鎖死 X 鍵，必須放開才能再次吐出
 }
 
 // ============ 吞下（按 Down）============
