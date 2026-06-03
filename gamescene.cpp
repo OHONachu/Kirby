@@ -409,7 +409,7 @@ void GameScene::setupStage2() {
     addBlock(f3x + 400, FLOOR_Y - 214);
     addBlock(f3x + 1100, FLOOR_Y - 320);
     addEnemy(ENEMY_WADDLE_DEE, f3x + 300, FLOOR_Y, f3x + 100, f3x + 600);
-    addEnemy(ENEMY_HOT_HEAD, f3x + 900, FLOOR_Y, f3x + 700, f3x + 1300);
+    addEnemy(ENEMY_HOT_HEAD, f3x + 900, FLOOR_Y+50, f3x + 700, f3x + 1300);
 
     // === Frame 2-4: 高難度 + 1UP ===
     double f4x = FRAME_WIDTH * 3;
@@ -441,7 +441,7 @@ void GameScene::setupStage2() {
     addPlatform(f5x + 800, FLOOR_Y - 350, 2);
     addBlock(f5x + 500, FLOOR_Y - 214);
     addEnemy(ENEMY_WADDLE_DEE, f5x + 300, FLOOR_Y, f5x + 100, f5x + 600);
-    addEnemy(ENEMY_HOT_HEAD, f5x + 700, FLOOR_Y, f5x + 500, f5x + 1100);
+    addEnemy(ENEMY_HOT_HEAD, f5x + 700, FLOOR_Y+50, f5x + 500, f5x + 1100);
 
     // Goal (終點門)
     QPixmap goalPix = loadAndScale(":/Dataset/item/door.png");
@@ -740,7 +740,9 @@ void GameScene::updateEnemies() {
         // Hot Head 火球生成
         if (e->type == ENEMY_HOT_HEAD) {
             HotHead *hh = dynamic_cast<HotHead*>(e);
+            hh->setTargetX(kirby->x());
             if (hh && hh->shouldShootFire()) {
+
                 double fx = hh->facingRight ? hh->x() + hh->pixmap().width()
                                             : hh->x() - hh->spr_fire_proj.width();
                 double fy = hh->y() + hh->pixmap().height() / 3.0;
@@ -751,6 +753,7 @@ void GameScene::updateEnemies() {
                 projectiles.append(fb);
             }
             if (hh && hh->isBreathingFire()){
+
                 QRectF breathBox = hh->getBreathBox();
                 if (breathBox.intersects(kirby->getHitbox())) {
                     kirby->takeDamage();

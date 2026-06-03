@@ -155,6 +155,7 @@ HotHead::HotHead(double sx, double sy, double pMinX, double pMaxX)
     vx = ENEMY_SPEED;
     wantsToShoot = false;
     attackCooldown = HOTHEAD_FIRE_INTERVAL;
+    targetX = sx;
 
     spr_walk_R  = loadAndScale(":/Dataset/Hot Head/Hot_head_run_R.png");
     spr_walk_L  = loadAndScale(":/Dataset/Hot Head/Hot_head_run_L.png");
@@ -174,7 +175,9 @@ HotHead::HotHead(double sx, double sy, double pMinX, double pMaxX)
     fireEffect->setVisible(false);                // 預設隱藏
     fireEffect->setZValue(6);                     // 顯示在本體前面
 }
-
+void HotHead::setTargetX(double kirbyX) {
+    targetX = kirbyX;
+}
 void HotHead::updateEnemy() {
     if (!alive) return;
     wantsToShoot = false;
@@ -182,7 +185,7 @@ void HotHead::updateEnemy() {
     if (isAttacking) {
         attackTimer--;
         if (attackMode == 0) {
-            // === Fire Ball 模式 ===
+            // === Fire Ball ===
             setPixmap(facingRight ? spr_attack_R : spr_attack_L);
             fireEffect->setVisible(false);
             if (attackTimer <= 0) {
@@ -190,22 +193,19 @@ void HotHead::updateEnemy() {
                 wantsToShoot = true;
             }
         } else {
-            // === Flame Breath 模式 ===
+            // === Flame Breath ===
             breathingFire = true;
             setPixmap(facingRight ? spr_attack_R : spr_attack_L);
-            // 火焰動畫
             animTimer++;
-            if (animTimer >= 8) {
+            if (animTimer >= 6) {
                 animTimer = 0;
                 animFrame = 1 - animFrame;
             }
-            // 設定火焰圖片
             if (animFrame == 0) {
                 fireEffect->setPixmap(facingRight ? spr_breath_R1 : spr_breath_L1);
             } else {
                 fireEffect->setPixmap(facingRight ? spr_breath_R2 : spr_breath_L2);
             }
-            // 定位火焰（在本體前方）
             if (facingRight) {
                 fireEffect->setPos(pixmap().width(), 0);
             } else {
@@ -217,29 +217,46 @@ void HotHead::updateEnemy() {
                 fireEffect->setVisible(false);
             }
         }
-        // 攻擊結束 → 恢復移動速度
         if (!isAttacking) {
             vx = facingRight ? ENEMY_SPEED : -ENEMY_SPEED;
             fireEffect->setVisible(false);
         }
         return;
     }
-    // 巡邏移動
+    // === 巡邏移動 ===
     setPos(x() + vx, y());
     if (x() <= patrolMinX) { vx = ENEMY_SPEED; facingRight = true; }
     if (x() + pixmap().width() >= patrolMaxX) { vx = -ENEMY_SPEED; facingRight = false; }
-    // 攻擊冷卻
+    // === 判斷是否攻擊 ===
     attackCooldown--;
     if (attackCooldown <= 0) {
-        isAttacking = true;
-        attackTimer = 30;
-        attackCooldown = HOTHEAD_FIRE_INTERVAL;
-        vx = 0;
-        attackMode = 1 - attackMode;
-        animFrame = 0;
-        animTimer = 0;
+        double dx = targetX - x();
+        bool kirbyInFront = (facingRight && dx > 0) || (!facingRight && dx < 0);
+        double dist = qAbs(dx);
+        if (kirbyInFront && dist <= 150) {
+            // 近距離 → Flame Breath
+            isAttacking = true;
+            attackTimer = 45;
+            attackMode = 1;
+            attackCooldown = HOTHEAD_FIRE_INTERVAL;
+            vx = 0;
+            animFrame = 0;
+            animTimer = 0;
+        } else if (kirbyInFront && dist <= 500) {
+            // 中距離 → Fire Ball
+            isAttacking = true;
+            attackTimer = 30;
+            attackMode = 0;
+            attackCooldown = HOTHEAD_FIRE_INTERVAL;
+            vx = 0;
+            animFrame = 0;
+            animTimer = 0;
+        } else {
+            // Kirby 不在前方或太遠 → 不攻擊，短時間後再檢查
+            attackCooldown = 30;
+        }
     }
-    // 走路動畫
+    // === 走路動畫 ===
     animTimer++;
     if (animTimer >= 10) { animTimer = 0; animFrame = 1 - animFrame; }
     if (vx != 0) { setPixmap(facingRight ? spr_walk_R : spr_walk_L); }
@@ -463,6 +480,7 @@ WaddleDoo::WaddleDoo(double sx, double sy, double pMinX, double pMaxX)
     grantedAbility = ABILITY_NONE;
     vx = ENEMY_SPEED;
     beaming = false;
+    sweepStep = 0;
     attackCooldown = 180;
 
     spr_stop_R = loadAndScale(":/Dataset/Waddle Doo/stop_R.png")
@@ -482,12 +500,15 @@ WaddleDoo::WaddleDoo(double sx, double sy, double pMinX, double pMaxX)
                        .scaled(WD_W, WD_H, Qt::KeepAspectRatio, Qt::FastTransformation));
     }
     spr_beam1 = loadAndScale(":/Dataset/Waddle Doo/Beam1.png")
-                .scaled(BEAM_W, BEAM_H, Qt::KeepAspectRatio, Qt::FastTransformation);
+                .scaled(BEAM_S, BEAM_S, Qt::KeepAspectRatio, Qt::FastTransformation);
     spr_beam2 = loadAndScale(":/Dataset/Waddle Doo/Beam2.png")
-                .scaled(BEAM_W, BEAM_H, Qt::KeepAspectRatio, Qt::FastTransformation);
-    beamEffect = new QGraphicsPixmapItem(this);
-    beamEffect->setVisible(false);
-    beamEffect->setZValue(6);
+                .scaled(BEAM_S, BEAM_S, Qt::KeepAspectRatio, Qt::FastTransformation);
+    // 建立 3 顆光束子物件
+    for (int i = 0; i < 3; i++) {
+        beams[i] = new QGraphicsPixmapItem(this);
+        beams[i]->setVisible(false);
+        beams[i]->setZValue(6);
+    }
     setPixmap(spr_stop_R);
 }
 void WaddleDoo::updateEnemy() {
@@ -495,39 +516,66 @@ void WaddleDoo::updateEnemy() {
     beaming = false;
     if (isAttacking) {
         attackTimer--;
-        // 前半段：播攻擊動畫（3 幀）
-        // 後半段：顯示光束
-        if (attackTimer > 20) {
-            // 攻擊動畫階段（30→21，共 10 幀播 3 張圖）
+        double bw = spr_beam1.width();
+        double bh = spr_beam1.height();
+        double cx = pixmap().width() / 2.0 - bw / 2.0;  // 本體中心 X
+        if (attackTimer > 30) {
+            // === 階段 1：播攻擊動畫（40→31，共 10 幀播 3 張圖）===
             animTimer++;
             if (animTimer >= 4) {
                 animTimer = 0;
                 animFrame++;
-                if (animFrame >= 3) animFrame = 2; // 停在最後一張
+                if (animFrame >= 3) animFrame = 2;
             }
             setPixmap(facingRight ? attackR[animFrame] : attackL[animFrame]);
-            beamEffect->setVisible(false);
+            for (int i = 0; i < 3; i++) beams[i]->setVisible(false);
         } else {
-            // 光束階段（20→0，持續 20 幀）
+            // === 階段 2：光束掃擊（30→0）===
             beaming = true;
-            setPixmap(facingRight ? attackR[2] : attackL[2]); // 維持攻擊最後一張
-            // 光束動畫交替
+            setPixmap(facingRight ? attackR[2] : attackL[2]);
+            // 光束閃爍動畫
             animTimer++;
-            if (animTimer >= 5) {
+            if (animTimer >= 4) {
                 animTimer = 0;
                 animFrame = 1 - animFrame;
             }
-            beamEffect->setPixmap(animFrame == 0 ? spr_beam1 : spr_beam2);
-            // 光束位置：頭頂正上方
-            double beamX = (pixmap().width() - beamEffect->pixmap().width()) / 2.0;
-            double beamY = -beamEffect->pixmap().height();
-            beamEffect->setPos(beamX, beamY);
-            beamEffect->setVisible(true);
+            QPixmap beamPix = (animFrame == 0) ? spr_beam1 : spr_beam2;
+            for (int i = 0; i < 3; i++) beams[i]->setPixmap(beamPix);
+            // 計算掃擊階段（30→0 分成 4 步，每步約 7~8 幀）
+            if (attackTimer > 28)      sweepStep = 0;  // 正上方
+            else if (attackTimer > 21) sweepStep = 1;  // 斜上方
+            else if (attackTimer > 14) sweepStep = 2;  // 斜前方
+            else if (attackTimer > 7)  sweepStep = 3;
+            else                       sweepStep = 4;  // 正前方
+            // 設定 3 顆光束的位置（相對於本體）
+            double dir = facingRight ? 1.0 : -1.0;
+            double offsets[5][3][2] = {
+                // step 0: 正上方
+                { {cx, -3*bh+20}, {cx, -2*bh+20}, {cx, -1*bh+20} },
+                // step 1: 斜上方
+                { {cx + dir*bw*0.8, -2.5*bh+20}, {cx + dir*bw*0.4, -1.7*bh+20}, {cx, -0.8*bh+20} },
+                // step 2: 斜前方
+                { {cx + dir*bw*1.5, -1.5*bh+20}, {cx + dir*bw*0.8, -0.8*bh+20}, {cx + dir*bw*0.2, -0.1*bh+20} },
+                // step 3: 正前方
+                { {cx + dir*bw*2.2, 0+20}, {cx + dir*bw*1.2, 0+20}, {cx + dir*bw*0.2, 0+20} },
+                // step 4: 斜下方 45° ← 新增
+                { {cx + dir*bw*1.5, 1.5*bh+20}, {cx + dir*bw*0.8, 0.8*bh+20}, {cx + dir*bw*0.2, 0.1*bh+20} }
+            };
+            // 面朝左時，調整 X 讓光束出現在左邊
+            for (int i = 0; i < 3; i++) {
+                double bx = offsets[sweepStep][i][0];
+                double by = offsets[sweepStep][i][1];
+                if (!facingRight) {
+                    bx = bx - bw * 0.5;
+                }
+                beams[i]->setPos(bx, by);
+                beams[i]->setVisible(true);
+            }
         }
         if (attackTimer <= 0) {
             isAttacking = false;
             vx = facingRight ? ENEMY_SPEED : -ENEMY_SPEED;
-            beamEffect->setVisible(false);
+            for (int i = 0; i < 3; i++) beams[i]->setVisible(false);
         }
         return;
     }
@@ -539,7 +587,7 @@ void WaddleDoo::updateEnemy() {
     attackCooldown--;
     if (attackCooldown <= 0) {
         isAttacking = true;
-        attackTimer = 40;
+        attackTimer = 45;
         attackCooldown = 180;
         vx = 0;
         animFrame = 0;
@@ -558,9 +606,20 @@ bool WaddleDoo::isBeaming() const {
 }
 QRectF WaddleDoo::getBeamBox() const {
     if (!beaming) return QRectF();
-    double beamW = spr_beam1.width();
-    double beamH = spr_beam1.height() + 20;
-    double bx = x() + (pixmap().width() - beamW) / 2.0;
-    double by = y() - beamH;
-    return QRectF(bx, by, beamW, beamH);
+    double bw = spr_beam1.width();
+    double bh = spr_beam1.height();
+    // 用所有可見光束的位置算出一個大範圍的 hitbox
+    double minX = x(), minY = y(), maxX = x(), maxY = y();
+    for (int i = 0; i < 3; i++) {
+        if (beams[i]->isVisible()) {
+            // beams[i]->pos() 是相對座標，要加上本體位置
+            double bx = x() + beams[i]->pos().x();
+            double by = y() + beams[i]->pos().y();
+            if (bx < minX) minX = bx;
+            if (by < minY) minY = by;
+            if (bx + bw > maxX) maxX = bx + bw;
+            if (by + bh > maxY) maxY = by + bh;
+        }
+    }
+    return QRectF(minX, minY, maxX - minX, maxY - minY);
 }

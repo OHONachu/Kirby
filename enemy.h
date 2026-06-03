@@ -66,6 +66,7 @@ public:
     bool isBreathingFire() const;   // 新：GameScene 用來檢查噴火判定
     QRectF getBreathBox() const;    // 新：噴火傷害範圍
     QPixmap spr_fire_proj; // 火球圖片供 GameScene 使用
+    void setTargetX(double kirbyX);   // 新增
 private:
     QPixmap spr_walk_R, spr_walk_L;
     QPixmap spr_stop_R, spr_stop_L;
@@ -77,6 +78,7 @@ private:
     bool breathingFire;     // 新：是否正在噴火
     int attackMode;         // 新：0 = fireball, 1 = flame breath
     QGraphicsPixmapItem *fireEffect;   // 新增：火焰特效物件
+    double targetX;    // 新增
 };
 
 // ============ Sparky ============
@@ -117,14 +119,15 @@ class WaddleDoo : public Enemy {
 public:
     WaddleDoo(double sx, double sy, double pMinX, double pMaxX);
     void updateEnemy() override;
-    bool isBeaming() const;         // GameScene 用來檢查光束傷害
-    QRectF getBeamBox() const;      // 光束傷害範圍
+    bool isBeaming() const;
+    QRectF getBeamBox() const;
 private:
     QPixmap spr_stop_R, spr_stop_L;
-    QVector<QPixmap> walkR, walkL;       // 各 6 張走路
-    QVector<QPixmap> attackR, attackL;   // 各 3 張攻擊
-    QPixmap spr_beam1, spr_beam2;        // 光束圖片
-    QGraphicsPixmapItem *beamEffect;     // 光束特效物件
-    bool beaming;                         // 是否正在放光束
+    QVector<QPixmap> walkR, walkL;
+    QVector<QPixmap> attackR, attackL;
+    QPixmap spr_beam1, spr_beam2;
+    QGraphicsPixmapItem *beams[3];    // 3 顆光束
+    bool beaming;
+    int sweepStep;                     // 掃擊階段 0~3
 };
 #endif // ENEMY_H
