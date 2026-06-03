@@ -78,94 +78,98 @@ void Kirby::loadSprites() {
 
     // 星星彈
     spr_star = loadAndScale(base + "kirby_attack_star(2).png");
-
+    QSize targetSizespr_stand_R = spr_stand_R.size();
+    QSize targetSizespr_walk_R = spr_walk_R[1].size();
+    QSize targetSizespr_fly1_R = spr_fly1_R.size();
+    QSize targetSizespr_down_R = spr_down_R.size();
     // ====== Fire Ability Sprites ======
     QString fireBase = ":/Dataset/Kirby_fire/";
-    spr_fire_stand_R = loadAndScale(fireBase + "kirbyfire_stop_R.png");
-    spr_fire_stand_L = loadAndScale(fireBase + "kirbyfire_stop_L.png");
+    spr_fire_stand_R = loadAndScale(fireBase + "kirbyfire_stop_R.png").scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_fire_stand_L = loadAndScale(fireBase + "kirbyfire_stop_L.png").scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
     for (int i = 1; i <= 3; i++) {
-        spr_fire_walk_R.append(loadAndScale(fireBase + QString("kirbyfire_run(%1)_R.png").arg(i)));
-        spr_fire_walk_L.append(loadAndScale(fireBase + QString("kirbyfire_run(%1)_L.png").arg(i)));
+        spr_fire_walk_R.append(loadAndScale(fireBase + QString("kirbyfire_run(%1)_R.png").arg(i)).scaled(targetSizespr_walk_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
+        spr_fire_walk_L.append(loadAndScale(fireBase + QString("kirbyfire_run(%1)_L.png").arg(i)).scaled(targetSizespr_walk_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
     }
 
-    spr_fire_fly1_R = loadAndScale(fireBase + "kirbyfire_fly(1)_R.png");
-    spr_fire_fly1_L = loadAndScale(fireBase + "kirbyfire_fly(1)_L.png");
-    spr_fire_fly2_R = loadAndScale(fireBase + "kirbyfire_fly(2)_R.png");
-    spr_fire_fly2_L = loadAndScale(fireBase + "kirbyfire_fly(2)_L.png");
+    spr_fire_fly1_R = loadAndScale(fireBase + "kirbyfire_fly(1)_R.png").scaled(targetSizespr_fly1_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_fire_fly1_L = loadAndScale(fireBase + "kirbyfire_fly(1)_L.png").scaled(targetSizespr_fly1_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_fire_fly2_R = loadAndScale(fireBase + "kirbyfire_fly(2)_R.png").scaled(targetSizespr_fly1_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_fire_fly2_L = loadAndScale(fireBase + "kirbyfire_fly(2)_L.png").scaled(targetSizespr_fly1_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
-    spr_fire_down_R = loadAndScale(fireBase + "kirbyfire_down_R.png");
-    spr_fire_down_L = loadAndScale(fireBase + "kirbyfire_down_L.png");
+    spr_fire_down_R = loadAndScale(fireBase + "kirbyfire_down_R.png").scaled(targetSizespr_down_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_fire_down_L = loadAndScale(fireBase + "kirbyfire_down_L.png").scaled(targetSizespr_down_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
     for (int i = 1; i <= 3; i++) {
-        spr_fire_attack_R.append(loadAndScale(fireBase + QString("kirbyfire_fire(%1)_R.png").arg(i)));
-        spr_fire_attack_L.append(loadAndScale(fireBase + QString("kirbyfire_fire(%1)_L.png").arg(i)));
+        spr_fire_attack_R.append(loadAndScale(fireBase + QString("kirbyfire_fire(%1)_R.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
+        spr_fire_attack_L.append(loadAndScale(fireBase + QString("kirbyfire_fire(%1)_L.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
     }
 
     // ====== Spark Ability Sprites ======
     QString sparkBase = ":/Dataset/Kirby_spark/";
-    spr_spark_stand_R = loadAndScale(sparkBase + "Kirby_spark_stop_R.png");
-    spr_spark_stand_L = loadAndScale(sparkBase + "Kirby_spark_stop_L.png");
+    spr_spark_stand_R = loadAndScale(sparkBase + "Kirby_spark_stop_R.png").scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_spark_stand_L = loadAndScale(sparkBase + "Kirby_spark_stop_L.png").scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
     for (int i = 1; i <= 2; i++) {
-        spr_spark_walk_R.append(loadAndScale(sparkBase + QString("Kirby_spark_run(%1)_R.png").arg(i)));
-        spr_spark_walk_L.append(loadAndScale(sparkBase + QString("Kirby_spark_run(%1)_L.png").arg(i)));
+        spr_spark_walk_R.append(loadAndScale(sparkBase + QString("Kirby_spark_run(%1)_R.png").arg(i)).scaled(targetSizespr_walk_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
+        spr_spark_walk_L.append(loadAndScale(sparkBase + QString("Kirby_spark_run(%1)_L.png").arg(i)).scaled(targetSizespr_walk_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
     }
 
-    spr_spark_fly1_R = loadAndScale(sparkBase + "Kirby_spark_fly(1)_R.png");
-    spr_spark_fly1_L = loadAndScale(sparkBase + "Kirby_spark_fly(1)_L.png");
-    spr_spark_fly2_R = loadAndScale(sparkBase + "Kirby_spark_fly(2)_R.png");
-    spr_spark_fly2_L = loadAndScale(sparkBase + "Kirby_spark_fly(2)_L.png");
+    spr_spark_fly1_R = loadAndScale(sparkBase + "Kirby_spark_fly(1)_R.png").scaled(targetSizespr_fly1_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_spark_fly1_L = loadAndScale(sparkBase + "Kirby_spark_fly(1)_L.png").scaled(targetSizespr_fly1_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_spark_fly2_R = loadAndScale(sparkBase + "Kirby_spark_fly(2)_R.png").scaled(targetSizespr_fly1_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_spark_fly2_L = loadAndScale(sparkBase + "Kirby_spark_fly(2)_L.png").scaled(targetSizespr_fly1_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
-    spr_spark_down_R = loadAndScale(sparkBase + "Kirby_spark_down_R.png");
-    spr_spark_down_L = loadAndScale(sparkBase + "Kirby_spark_down_L.png");
+    spr_spark_down_R = loadAndScale(sparkBase + "Kirby_spark_down_R.png").scaled(targetSizespr_down_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_spark_down_L = loadAndScale(sparkBase + "Kirby_spark_down_L.png").scaled(targetSizespr_down_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
     for (int i = 1; i <= 3; i++) {
-        spr_spark_attack.append(loadAndScale(sparkBase + QString("Kirby_spark_attack(%1).png").arg(i)));
+        spr_spark_attack.append(loadAndScale(sparkBase + QString("Kirby_spark_attack(%1).png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
     }
     // ====== Cutter Ability Sprites ======
+
     QString cutterBase = ":/Dataset/Kirby_cutter/";
-    spr_cutter_stand_R = loadAndScale(cutterBase + "Kirby_cutter_stop_R.png");
-    spr_cutter_stand_L = loadAndScale(cutterBase + "Kirby_cutter_stop_L.png");
+    spr_cutter_stand_R = loadAndScale(cutterBase + "Kirby_cutter_stop_R.png").scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_cutter_stand_L = loadAndScale(cutterBase + "Kirby_cutter_stop_L.png").scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
     for (int i = 1; i <= 4; i++) {
-        spr_cutter_walk_R.append(loadAndScale(cutterBase + QString("Kirby_cutter_run(%1)_R.png").arg(i)));
-        spr_cutter_walk_L.append(loadAndScale(cutterBase + QString("Kirby_cutter_run(%1)_L.png").arg(i)));
+        spr_cutter_walk_R.append(loadAndScale(cutterBase + QString("Kirby_cutter_run(%1)_R.png").arg(i)).scaled(targetSizespr_walk_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
+        spr_cutter_walk_L.append(loadAndScale(cutterBase + QString("Kirby_cutter_run(%1)_L.png").arg(i)).scaled(targetSizespr_walk_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
     }
 
-    spr_cutter_fly1_R = loadAndScale(cutterBase + "Kirby_cutter_fly(1)_R.png");
-    spr_cutter_fly1_L = loadAndScale(cutterBase + "Kirby_cutter_fly(1)_L.png");
-    spr_cutter_fly2_R = loadAndScale(cutterBase + "Kirby_cutter_fly(2)_R.png");
-    spr_cutter_fly2_L = loadAndScale(cutterBase + "Kirby_cutter_fly(2)_L.png");
+    spr_cutter_fly1_R = loadAndScale(cutterBase + "Kirby_cutter_fly(1)_R.png").scaled(targetSizespr_fly1_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_cutter_fly1_L = loadAndScale(cutterBase + "Kirby_cutter_fly(1)_L.png").scaled(targetSizespr_fly1_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_cutter_fly2_R = loadAndScale(cutterBase + "Kirby_cutter_fly(2)_R.png").scaled(targetSizespr_fly1_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_cutter_fly2_L = loadAndScale(cutterBase + "Kirby_cutter_fly(2)_L.png").scaled(targetSizespr_fly1_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
-    spr_cutter_down_R = loadAndScale(cutterBase + "Kirby_cutter_down_R.png");
-    spr_cutter_down_L = loadAndScale(cutterBase + "Kirby_cutter_down_L.png");
+    spr_cutter_down_R = loadAndScale(cutterBase + "Kirby_cutter_down_R.png").scaled(targetSizespr_down_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_cutter_down_L = loadAndScale(cutterBase + "Kirby_cutter_down_L.png").scaled(targetSizespr_down_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
     for (int i = 1; i <= 2; i++) {
-        spr_cutter_attack_R.append(loadAndScale(sparkBase + QString("Kirby_cutter_attack(%1)_R.png").arg(i)));
-        spr_cutter_attack_L.append(loadAndScale(sparkBase + QString("Kirby_cutter_attack(%1)_L.png").arg(i)));
+        spr_cutter_attack_R.append(loadAndScale(cutterBase + QString("Kirby_cutter_attack(%1)_R.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
+        spr_cutter_attack_L.append(loadAndScale(cutterBase + QString("Kirby_cutter_attack(%1)_L.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
     }
     // ====== Doo Ability Sprites ======
     QString dooBase = ":/Dataset/Kirby_doo/";
-    spr_doo_stand_R = loadAndScale(dooBase + "Kirby_doo_stop_R.png");
-    spr_doo_stand_L = loadAndScale(dooBase + "Kirby_doo_stop_L.png");
+    spr_doo_stand_R = loadAndScale(dooBase + "Kirby_doo_stop_R.png").scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_doo_stand_L = loadAndScale(dooBase + "Kirby_doo_stop_L.png").scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
     for (int i = 1; i <= 4; i++) {
-        spr_doo_walk_R.append(loadAndScale(dooBase + QString("Kirby_doo_run(%1)_R.png").arg(i)));
-        spr_doo_walk_L.append(loadAndScale(dooBase + QString("Kirby_doo_run(%1)_L.png").arg(i)));
+        spr_doo_walk_R.append(loadAndScale(dooBase + QString("Kirby_doo_run(%1)_R.png").arg(i)).scaled(targetSizespr_walk_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
+        spr_doo_walk_L.append(loadAndScale(dooBase + QString("Kirby_doo_run(%1)_L.png").arg(i)).scaled(targetSizespr_walk_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
     }
 
-    spr_doo_fly1_R = loadAndScale(dooBase + "Kirby_doo_fly(1)_R.png");
-    spr_doo_fly1_L = loadAndScale(dooBase + "Kirby_doo_fly(1)_L.png");
-    spr_doo_fly2_R = loadAndScale(dooBase + "Kirby_doo_fly(2)_R.png");
-    spr_doo_fly2_L = loadAndScale(dooBase + "Kirby_doo_fly(2)_L.png");
+    spr_doo_fly1_R = loadAndScale(dooBase + "Kirby_doo_fly(1)_R.png").scaled(targetSizespr_fly1_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_doo_fly1_L = loadAndScale(dooBase + "Kirby_doo_fly(1)_L.png").scaled(targetSizespr_fly1_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_doo_fly2_R = loadAndScale(dooBase + "Kirby_doo_fly(2)_R.png").scaled(targetSizespr_fly1_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_doo_fly2_L = loadAndScale(dooBase + "Kirby_doo_fly(2)_L.png").scaled(targetSizespr_fly1_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
-    spr_doo_down_R = loadAndScale(dooBase + "Kirby_doo_down_R.png");
-    spr_doo_down_L = loadAndScale(dooBase + "Kirby_doo_down_L.png");
+    spr_doo_down_R = loadAndScale(dooBase + "Kirby_doo_down_R.png").scaled(targetSizespr_down_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_doo_down_L = loadAndScale(dooBase + "Kirby_doo_down_L.png").scaled(targetSizespr_down_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
     for (int i = 1; i <= 2; i++) {
-        spr_doo_attack_R.append(loadAndScale(dooBase + QString("Kirby_doo_attack(%1)_R.png").arg(i)));
-        spr_doo_attack_L.append(loadAndScale(dooBase + QString("Kirby_doo_attack(%1)_L.png").arg(i)));
+        spr_doo_attack_R.append(loadAndScale(dooBase + QString("Kirby_doo_attack(%1)_R.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
+        spr_doo_attack_L.append(loadAndScale(dooBase + QString("Kirby_doo_attack(%1)_L.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
     }
 }
 
