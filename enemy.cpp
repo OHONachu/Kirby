@@ -464,10 +464,7 @@ WaddleDoo::WaddleDoo(double sx, double sy, double pMinX, double pMaxX)
     vx = ENEMY_SPEED;
     beaming = false;
     attackCooldown = 180;
-    const int WD_W = 130;
-    const int WD_H = 130;
-    const int BEAM_W = 80;
-    const int BEAM_H = 80;
+
     spr_stop_R = loadAndScale(":/Dataset/Waddle Doo/stop_R.png")
                  .scaled(WD_W, WD_H, Qt::KeepAspectRatio, Qt::FastTransformation);
     spr_stop_L = loadAndScale(":/Dataset/Waddle Doo/stop_L.png")
