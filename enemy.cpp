@@ -330,6 +330,7 @@ void Sparky::updateEnemy() {
             isAttacking = false;
             canBeInhaled = true;
             attackCooldown = 120;
+            vx = facingRight ? ENEMY_SPEED : -ENEMY_SPEED;
         }
         return;
     }
