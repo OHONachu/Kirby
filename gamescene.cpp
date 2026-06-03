@@ -131,13 +131,28 @@ void GameScene::loadStage(int stageNum) {
         kirby = new Kirby();
         addItem(kirby);
     }
-    kirby->reset(100, FLOOR_Y - 300);
+    // 進入新遊戲(Stage 1)時做全重置，否則(過關切換關卡)僅作軟重置保留血量與能力
+    bool isNewGame = (stageNum == 1);
+    if (isNewGame) {
+        kirby->lives = KIRBY_MAX_LIVES;
+    }
+    kirby->reset(100, FLOOR_Y - 300, isNewGame);
 
     // 🌟 修改：加上 Stage 3 的判斷
     if (stageNum == 1)      setupStage1();
     else if (stageNum == 2) setupStage2();
     else if (stageNum == 3) setupStage3();
     else if (stageNum == 4) setupStage4();
+
+    // 在卡比的出生點生成一個背景門，作為進場的入口
+    QPixmap spawnDoorPix = loadAndScale(":/Dataset/item/door.png");
+    QGraphicsPixmapItem *spawnDoor = new QGraphicsPixmapItem(spawnDoorPix);
+    // 卡比預設 X=100，所以門放在 X=100 (或依據門的寬度微調) 讓卡比剛好出現在門前
+    spawnDoor->setPos(100, FLOOR_Y - spawnDoorPix.height());
+    spawnDoor->setZValue(0); // 放在卡比(Z=10)和平台(Z=4)的背後
+    addItem(spawnDoor);
+    bgItems.append(spawnDoor); // 加入 bgItems 以便在 clearStage() 時自動清除
+
     // 設置 HUD
     setupHUD();
 
@@ -652,14 +667,26 @@ void GameScene::updateHUD() {
     lifeIconItem->setZValue(100);
     addItem(lifeIconItem);
 
-    // 3. 能力圖示 (放在 Lives 的左邊，保留 20 像素的間距)
+    // 3. 能力圖示 (獨立移至畫面左上角)
+    int marginX = 20; // 距離畫面左邊緣 20 像素
+    int marginY = 20; // 距離畫面頂端 20 像素
+
+    // X 座標 = 當前畫面最左側 + 左側邊距
+    double boardX = viewTopLeft.x() + marginX;
+    // Y 座標 = 當前畫面最頂端 + 頂部邊距
+    double boardY = viewTopLeft.y() + marginY;
+
     if (kirby->ability == ABILITY_FIRE) {
         abilityIcon->setPixmap(fireBoard);
-        abilityIcon->setPos(lifeX - fireBoard.width() - 20, lifeY);
+        abilityIcon->setPos(boardX, boardY);
         abilityIcon->setVisible(true);
     } else if (kirby->ability == ABILITY_SPARK) {
         abilityIcon->setPixmap(sparkBoard);
-        abilityIcon->setPos(lifeX - sparkBoard.width() - 20, lifeY);
+        abilityIcon->setPos(boardX, boardY);
+        abilityIcon->setVisible(true);
+    } else if (kirby->ability == ABILITY_CUTTER) {
+        abilityIcon->setPixmap(cutterBoard);
+        abilityIcon->setPos(boardX, boardY);
         abilityIcon->setVisible(true);
     } else {
         abilityIcon->setVisible(false);

@@ -80,7 +80,7 @@ void Kirby::loadSprites() {
     spr_star = loadAndScale(base + "kirby_attack_star(2).png");
 
     // ====== Fire Ability Sprites ======
-    QString fireBase = "Dataset/Kirby_fire/";
+    QString fireBase = ":/Dataset/Kirby_fire/";
     spr_fire_stand_R = loadAndScale(fireBase + "kirbyfire_stop_R.png");
     spr_fire_stand_L = loadAndScale(fireBase + "kirbyfire_stop_L.png");
 
@@ -103,7 +103,7 @@ void Kirby::loadSprites() {
     }
 
     // ====== Spark Ability Sprites ======
-    QString sparkBase = "Dataset/Kirby_spark/";
+    QString sparkBase = ":/Dataset/Kirby_spark/";
     spr_spark_stand_R = loadAndScale(sparkBase + "Kirby_spark_stop_R.png");
     spr_spark_stand_L = loadAndScale(sparkBase + "Kirby_spark_stop_L.png");
 
@@ -503,14 +503,16 @@ void Kirby::die() {
 }
 
 // ============ 重置 ============
-void Kirby::reset(double rx, double ry) {
+void Kirby::reset(double rx, double ry, bool fullReset) {
     setPos(rx, ry);
     vx = 0; vy = 0;
     onGround = false;
     facingRight = true;
     state = KIRBY_NORMAL;
-    ability = ABILITY_NONE;
-    hp = KIRBY_MAX_HP;
+    if (fullReset) {
+        ability = ABILITY_NONE;
+        hp = KIRBY_MAX_HP;
+    }
     isInvincible = false;
     invincibleTimer = 0;
     isAttacking = false;

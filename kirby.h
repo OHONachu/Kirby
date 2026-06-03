@@ -58,7 +58,7 @@ public:
     // 生命
     void takeDamage();
     void die();
-    void reset(double x, double y);
+    void reset(double x, double y, bool fullReset = true);
 
     // 碰撞框
     QRectF getHitbox() const;
