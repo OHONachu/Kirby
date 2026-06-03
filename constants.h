@@ -7,6 +7,8 @@ const int WINDOW_HEIGHT = 1080;
 const int FRAME_WIDTH   = 1620;
 const int STAGE1_FRAMES = 3;
 const int STAGE2_FRAMES = 5;
+const int STAGE3_FRAMES = 3;
+const int STAGE4_FRAMES = 3;
 
 // ============ 圖片縮放 ============
 const int SPRITE_SCALE = 1;
@@ -16,7 +18,7 @@ const int CKW_W = 180;  // 回力鏢小一點
 const int CKW_H = 180;
 
 // ============ 物理參數 ============
-const double GRAVITY         = 0.5;//重力
+const double GRAVITY         = 0.25;//重力
 const double MAX_FALL_SPEED  = 10.0;//終端速度
 const double KIRBY_SPEED     = 5.0;//水平速度
 const double KIRBY_JUMP_FORCE = -12.0;//往上跳
