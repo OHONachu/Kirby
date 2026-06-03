@@ -76,7 +76,8 @@ enum AbilityType {
     ABILITY_NONE,// 沒有能力
     ABILITY_FIRE,// 火焰能力
     ABILITY_SPARK,// 電擊能力
-    ABILITY_CUTTER// Cutter Knight
+    ABILITY_CUTTER,// Cutter Knight
+    ABILITY_BEAM
 };
 
 // ============ 敵人類型 ============
@@ -85,7 +86,8 @@ enum EnemyType {
     ENEMY_GORDO,// 海膽怪 (刺刺的那個)
     ENEMY_HOT_HEAD,// 火炎頭
     ENEMY_SPARKY,// 電擊怪
-    ENEMY_KNIGHT
+    ENEMY_KNIGHT,
+    ENEMY_WADDLE_DOO
 };
 
 // ============ 投射物類型 ============

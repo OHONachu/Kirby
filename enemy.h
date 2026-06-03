@@ -112,4 +112,19 @@ private:
     bool wantsToShoot;
 
 };
+// ============ Waddle Doo ============
+class WaddleDoo : public Enemy {
+public:
+    WaddleDoo(double sx, double sy, double pMinX, double pMaxX);
+    void updateEnemy() override;
+    bool isBeaming() const;         // GameScene 用來檢查光束傷害
+    QRectF getBeamBox() const;      // 光束傷害範圍
+private:
+    QPixmap spr_stop_R, spr_stop_L;
+    QVector<QPixmap> walkR, walkL;       // 各 6 張走路
+    QVector<QPixmap> attackR, attackL;   // 各 3 張攻擊
+    QPixmap spr_beam1, spr_beam2;        // 光束圖片
+    QGraphicsPixmapItem *beamEffect;     // 光束特效物件
+    bool beaming;                         // 是否正在放光束
+};
 #endif // ENEMY_H

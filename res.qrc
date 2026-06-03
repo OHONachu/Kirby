@@ -150,5 +150,28 @@
         <file>Dataset/item/live2.png</file>
         <file>Dataset/background/gameover(2).png</file>
         <file>Dataset/background/gameover(1).png</file>
+        <file>Dataset/Waddle Doo/Action Verbs Presentation.png</file>
+        <file>Dataset/Waddle Doo/attack_L_1.png</file>
+        <file>Dataset/Waddle Doo/attack_L_2.png</file>
+        <file>Dataset/Waddle Doo/attack_L_3.png</file>
+        <file>Dataset/Waddle Doo/attack_R_1.png</file>
+        <file>Dataset/Waddle Doo/attack_R_2.png</file>
+        <file>Dataset/Waddle Doo/attack_R_3.png</file>
+        <file>Dataset/Waddle Doo/lightweapon1.png</file>
+        <file>Dataset/Waddle Doo/lightweapon2.png</file>
+        <file>Dataset/Waddle Doo/run_L_1.png</file>
+        <file>Dataset/Waddle Doo/run_L_2.png</file>
+        <file>Dataset/Waddle Doo/run_L_3.png</file>
+        <file>Dataset/Waddle Doo/run_L_4.png</file>
+        <file>Dataset/Waddle Doo/run_L_5.png</file>
+        <file>Dataset/Waddle Doo/run_L_6.png</file>
+        <file>Dataset/Waddle Doo/run_R_1.png</file>
+        <file>Dataset/Waddle Doo/run_R_2.png</file>
+        <file>Dataset/Waddle Doo/run_R_3.png</file>
+        <file>Dataset/Waddle Doo/run_R_4.png</file>
+        <file>Dataset/Waddle Doo/run_R_5.png</file>
+        <file>Dataset/Waddle Doo/run_R_6.png</file>
+        <file>Dataset/Waddle Doo/stop_L.png</file>
+        <file>Dataset/Waddle Doo/stop_R.png</file>
     </qresource>
 </RCC>

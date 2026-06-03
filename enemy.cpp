@@ -455,3 +455,115 @@ bool cutKnight::shouldShootCutter() {
     wantsToShoot = false;
     return result;
 }
+WaddleDoo::WaddleDoo(double sx, double sy, double pMinX, double pMaxX)
+    : Enemy(ENEMY_WADDLE_DOO, sx, sy, pMinX, pMaxX)
+{
+    canBeInhaled = true;
+    canBeDamaged = true;
+    grantedAbility = ABILITY_NONE;
+    vx = ENEMY_SPEED;
+    beaming = false;
+    attackCooldown = 180;
+    const int WD_W = 130;
+    const int WD_H = 130;
+    const int BEAM_W = 80;
+    const int BEAM_H = 80;
+    spr_stop_R = loadAndScale(":/Dataset/Waddle Doo/stop_R.png")
+                 .scaled(WD_W, WD_H, Qt::KeepAspectRatio, Qt::FastTransformation);
+    spr_stop_L = loadAndScale(":/Dataset/Waddle Doo/stop_L.png")
+                 .scaled(WD_W, WD_H, Qt::KeepAspectRatio, Qt::FastTransformation);
+    for (int i = 1; i <= 6; i++) {
+        walkR.append(loadAndScale(QString(":/Dataset/Waddle Doo/run_R_%1.png").arg(i))
+                     .scaled(WD_W, WD_H, Qt::KeepAspectRatio, Qt::FastTransformation));
+        walkL.append(loadAndScale(QString(":/Dataset/Waddle Doo/run_L_%1.png").arg(i))
+                     .scaled(WD_W, WD_H, Qt::KeepAspectRatio, Qt::FastTransformation));
+    }
+    for (int i = 1; i <= 3; i++) {
+        attackR.append(loadAndScale(QString(":/Dataset/Waddle Doo/attack_R_%1.png").arg(i))
+                       .scaled(WD_W, WD_H, Qt::KeepAspectRatio, Qt::FastTransformation));
+        attackL.append(loadAndScale(QString(":/Dataset/Waddle Doo/attack_L_%1.png").arg(i))
+                       .scaled(WD_W, WD_H, Qt::KeepAspectRatio, Qt::FastTransformation));
+    }
+    spr_beam1 = loadAndScale(":/Dataset/Waddle Doo/Beam1.png")
+                .scaled(BEAM_W, BEAM_H, Qt::KeepAspectRatio, Qt::FastTransformation);
+    spr_beam2 = loadAndScale(":/Dataset/Waddle Doo/Beam2.png")
+                .scaled(BEAM_W, BEAM_H, Qt::KeepAspectRatio, Qt::FastTransformation);
+    beamEffect = new QGraphicsPixmapItem(this);
+    beamEffect->setVisible(false);
+    beamEffect->setZValue(6);
+    setPixmap(spr_stop_R);
+}
+void WaddleDoo::updateEnemy() {
+    if (!alive) return;
+    beaming = false;
+    if (isAttacking) {
+        attackTimer--;
+        // 前半段：播攻擊動畫（3 幀）
+        // 後半段：顯示光束
+        if (attackTimer > 20) {
+            // 攻擊動畫階段（30→21，共 10 幀播 3 張圖）
+            animTimer++;
+            if (animTimer >= 4) {
+                animTimer = 0;
+                animFrame++;
+                if (animFrame >= 3) animFrame = 2; // 停在最後一張
+            }
+            setPixmap(facingRight ? attackR[animFrame] : attackL[animFrame]);
+            beamEffect->setVisible(false);
+        } else {
+            // 光束階段（20→0，持續 20 幀）
+            beaming = true;
+            setPixmap(facingRight ? attackR[2] : attackL[2]); // 維持攻擊最後一張
+            // 光束動畫交替
+            animTimer++;
+            if (animTimer >= 5) {
+                animTimer = 0;
+                animFrame = 1 - animFrame;
+            }
+            beamEffect->setPixmap(animFrame == 0 ? spr_beam1 : spr_beam2);
+            // 光束位置：頭頂正上方
+            double beamX = (pixmap().width() - beamEffect->pixmap().width()) / 2.0;
+            double beamY = -beamEffect->pixmap().height();
+            beamEffect->setPos(beamX, beamY);
+            beamEffect->setVisible(true);
+        }
+        if (attackTimer <= 0) {
+            isAttacking = false;
+            vx = facingRight ? ENEMY_SPEED : -ENEMY_SPEED;
+            beamEffect->setVisible(false);
+        }
+        return;
+    }
+    // 巡邏移動
+    setPos(x() + vx, y());
+    if (x() <= patrolMinX) { vx = ENEMY_SPEED; facingRight = true; }
+    if (x() + pixmap().width() >= patrolMaxX) { vx = -ENEMY_SPEED; facingRight = false; }
+    // 攻擊冷卻
+    attackCooldown--;
+    if (attackCooldown <= 0) {
+        isAttacking = true;
+        attackTimer = 40;
+        attackCooldown = 180;
+        vx = 0;
+        animFrame = 0;
+        animTimer = 0;
+    }
+    // 走路動畫
+    animTimer++;
+    if (animTimer >= 6) {
+        animTimer = 0;
+        animFrame = (animFrame + 1) % walkR.size();
+    }
+    setPixmap(facingRight ? walkR[animFrame] : walkL[animFrame]);
+}
+bool WaddleDoo::isBeaming() const {
+    return beaming;
+}
+QRectF WaddleDoo::getBeamBox() const {
+    if (!beaming) return QRectF();
+    double beamW = spr_beam1.width();
+    double beamH = spr_beam1.height() + 20;
+    double bx = x() + (pixmap().width() - beamW) / 2.0;
+    double by = y() - beamH;
+    return QRectF(bx, by, beamW, beamH);
+}

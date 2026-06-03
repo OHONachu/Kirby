@@ -208,6 +208,9 @@ Enemy* GameScene::addEnemy(EnemyType type, double ex, double ey, double pMin, do
     case ENEMY_KNIGHT:
         e = new cutKnight(ex, ey, pMin, pMax);
         break;
+    case ENEMY_WADDLE_DOO:
+        e = new WaddleDoo(ex, ey, pMin, pMax);
+        break;
     }
     if (e) {
         // === 新增：自動貼齊地板的邏輯 ===
@@ -559,9 +562,9 @@ void GameScene::setupStage4() {
     addPlatform(f2x + 800, FLOOR_Y - 350, 3);
     addPlatform(f2x + 1300, FLOOR_Y - 200, 3);
     // 安排熱氣頭與電擊怪
-    addEnemy(ENEMY_HOT_HEAD, f2x + 400, FLOOR_Y, f2x + 200, f2x + 600);
+    addEnemy(ENEMY_WADDLE_DOO, f2x + 400, FLOOR_Y, f2x + 200, f2x + 600);
     addEnemy(ENEMY_SPARKY, f2x + 850, FLOOR_Y - 350, f2x + 800, f2x + 1000);
-    addEnemy(ENEMY_HOT_HEAD, f2x + 1200, FLOOR_Y, f2x + 1100, f2x + 1400);
+    addEnemy(ENEMY_WADDLE_DOO, f2x + 1200, FLOOR_Y, f2x + 1100, f2x + 1400);
     // === Frame 4-3: 通往勝利的防守線 ===
     double f3x = FRAME_WIDTH * 2;
     addFloor(f3x, FLOOR_Y, tilesPerFrame);
@@ -569,7 +572,7 @@ void GameScene::setupStage4() {
     addBlock(f3x + 500, FLOOR_Y - 300);
     addPlatform(f3x + 700, FLOOR_Y - 350, 2);
     addEnemy(ENEMY_WADDLE_DEE, f3x + 200, FLOOR_Y - 250, f3x + 150, f3x + 350);
-    addEnemy(ENEMY_WADDLE_DEE, f3x + 700, FLOOR_Y - 350, f3x + 650, f3x + 850);
+    addEnemy(ENEMY_WADDLE_DOO, f3x + 700, FLOOR_Y - 350, f3x + 650, f3x + 850);
     addEnemy(ENEMY_WADDLE_DEE, f3x + 900, FLOOR_Y, f3x + 800, f3x + 1200);
     // 設置關卡終點門 (Goal Door)
     QPixmap goalPix = loadAndScale(":/Dataset/item/goal_door.png");
@@ -756,6 +759,15 @@ void GameScene::updateEnemies() {
 
                     addItem(cutter);
                     projectiles.append(cutter);
+                }
+            }
+        }
+        if (e->type == ENEMY_WADDLE_DOO) {
+            WaddleDoo *wd = dynamic_cast<WaddleDoo*>(e);
+            if (wd && wd->isBeaming()) {
+                QRectF beamBox = wd->getBeamBox();
+                if (beamBox.intersects(kirby->getHitbox())) {
+                    kirby->takeDamage();
                 }
             }
         }
