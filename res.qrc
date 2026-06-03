@@ -51,8 +51,6 @@
         <file>Dataset/Kirby_fire/kirbyfire_run(3)_R.png</file>
         <file>Dataset/Kirby_fire/kirbyfire_stop_L.png</file>
         <file>Dataset/Kirby_fire/kirbyfire_stop_R.png</file>
-        <file>Dataset/Kirby_spark/Kirby_spark_attack(1).png</file>
-        <file>Dataset/Kirby_spark/Kirby_spark_attack(2).png</file>
         <file>Dataset/Kirby_spark/Kirby_spark_attack(3).png</file>
         <file>Dataset/Kirby_spark/Kirby_spark_board.png</file>
         <file>Dataset/Kirby_spark/Kirby_spark_down_L.png</file>
@@ -114,8 +112,6 @@
         <file>Dataset/background/stage4(1).png</file>
         <file>Dataset/background/stage4(2).png</file>
         <file>Dataset/background/stage4(3).png</file>
-        <file>Dataset/cutter knight/ck.png</file>
-        <file>Dataset/cutter knight/ck_attack_1_L.png</file>
         <file>Dataset/cutter knight/ck_attack_1_R.png</file>
         <file>Dataset/cutter knight/ck_attack_2_L.png</file>
         <file>Dataset/cutter knight/ck_attack_2_R.png</file>
@@ -132,22 +128,6 @@
         <file>Dataset/cutter knight/ckw4.png</file>
         <file>Dataset/Kirby_cutter/cs.png</file>
         <file>Dataset/Kirby_cutter/kbck.png</file>
-        <file>Dataset/Kirby_cutter/kbck01.png</file>
-        <file>Dataset/Kirby_cutter/kbck1.png</file>
-        <file>Dataset/Kirby_cutter/kbck02.png</file>
-        <file>Dataset/Kirby_cutter/kbck03.png</file>
-        <file>Dataset/Kirby_cutter/kbck04.png</file>
-        <file>Dataset/Kirby_cutter/kbck05.png</file>
-        <file>Dataset/Kirby_cutter/kbck06.png</file>
-        <file>Dataset/Kirby_cutter/kbck07.png</file>
-        <file>Dataset/Kirby_cutter/kbck08.png</file>
-        <file>Dataset/Kirby_cutter/kbck09.png</file>
-        <file>Dataset/Kirby_cutter/kbck10.png</file>
-        <file>Dataset/Kirby_cutter/kbck11.png</file>
-        <file>Dataset/Kirby_cutter/kbck12.png</file>
-        <file>Dataset/item/live0.png</file>
-        <file>Dataset/item/live1.png</file>
-        <file>Dataset/item/live2.png</file>
         <file>Dataset/background/gameover(2).png</file>
         <file>Dataset/background/gameover(1).png</file>
         <file>Dataset/Waddle Doo/Action Verbs Presentation.png</file>
@@ -173,5 +153,51 @@
         <file>Dataset/Waddle Doo/stop_R.png</file>
         <file>Dataset/Waddle Doo/Beam1.png</file>
         <file>Dataset/Waddle Doo/Beam2.png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_attack(1).png</file>
+        <file>Dataset/Kirby_spark/Kirby_spark_attack(2).png</file>
+        <file>Dataset/item/live0.png</file>
+        <file>Dataset/item/live1.png</file>
+        <file>Dataset/item/live2.png</file>
+        <file>Dataset/cutter knight/ck_attack_1_L.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_stop_R.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_attack(1)_L.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_attack(1)_R.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_attack(2)_L.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_attack(2)_R.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_down_L.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_down_R.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_fly(1)_L.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_fly(1)_R.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_fly(2)_L.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_fly(2)_R.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_run(1)_L.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_run(1)_R.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_run(2)_L.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_run(2)_R.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_run(3)_R.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_run(4)_R.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_stop_L.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_attack(1)_L.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_attack(1)_R.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_attack(2)_L.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_attack(2)_R.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_down_L.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_down_R.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_fly(1)_L.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_fly(1)_R.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_fly(2)_L.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_fly(2)_R.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_run()_L.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_run()_R.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_run(1)_L.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_run(1)_R.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_run(2)_L.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_run(2)_R.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_run(3)_L.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_run(3)_R.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_run(4)_L.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_run(4)_R.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_stop_L.png</file>
+        <file>Dataset/Kirby_cutter/Kirby_cutter_stop_R.png</file>
     </qresource>
 </RCC>

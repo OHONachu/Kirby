@@ -93,6 +93,19 @@ private:
     QPixmap spr_spark_down_R, spr_spark_down_L;
     QVector<QPixmap> spr_spark_attack;
 
+    // Cutter ability
+    QPixmap spr_cutter_stand_R, spr_cutter_stand_L;
+    QVector<QPixmap> spr_cutter_walk_R, spr_cutter_walk_L;
+    QPixmap spr_cutter_fly1_R, spr_cutter_fly1_L, spr_cutter_fly2_R, spr_cutter_fly2_L;
+    QPixmap spr_cutter_down_R, spr_cutter_down_L;
+    QVector<QPixmap> spr_cutter_attack_R, spr_cutter_attack_L;
+
+    // Doo ability
+    QPixmap spr_doo_stand_R, spr_doo_stand_L;
+    QVector<QPixmap> spr_doo_walk_R, spr_doo_walk_L;
+    QPixmap spr_doo_fly1_R, spr_doo_fly1_L, spr_doo_fly2_R, spr_doo_fly2_L;
+    QPixmap spr_doo_down_R, spr_doo_down_L;
+    QVector<QPixmap> spr_doo_attack_R, spr_doo_attack_L;
     // 星星彈
     QPixmap spr_star;
 
