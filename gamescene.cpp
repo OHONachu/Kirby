@@ -740,25 +740,28 @@ void GameScene::updateEnemies() {
         // Hot Head 火球生成
         if (e->type == ENEMY_HOT_HEAD) {
             HotHead *hh = dynamic_cast<HotHead*>(e);
-            hh->setTargetX(kirby->x());
-            if (hh && hh->shouldShootFire()) {
+            if (hh){
+                hh->setTargetX(kirby->x());
+                if (hh->shouldShootFire()) {
 
-                double fx = hh->facingRight ? hh->x() + hh->pixmap().width()
-                                            : hh->x() - hh->spr_fire_proj.width();
-                double fy = hh->y() + hh->pixmap().height() / 3.0;
-                double fvx = hh->facingRight ? HOTHEAD_FIRE_SPEED : -HOTHEAD_FIRE_SPEED;
-                Projectile *fb = new Projectile(PROJ_FIREBALL, fx, fy, fvx, 0,
-                                                false, hh->spr_fire_proj);
-                addItem(fb);
-                projectiles.append(fb);
-            }
-            if (hh && hh->isBreathingFire()){
+                    double fx = hh->facingRight ? hh->x() + hh->pixmap().width()
+                                                : hh->x() - hh->spr_fire_proj.width();
+                    double fy = hh->y() + hh->pixmap().height() / 3.0;
+                    double fvx = hh->facingRight ? HOTHEAD_FIRE_SPEED : -HOTHEAD_FIRE_SPEED;
+                    Projectile *fb = new Projectile(PROJ_FIREBALL, fx, fy, fvx, 0,
+                                                    false, hh->spr_fire_proj);
+                    addItem(fb);
+                    projectiles.append(fb);
+                }
+                if (hh->isBreathingFire()){
 
-                QRectF breathBox = hh->getBreathBox();
-                if (breathBox.intersects(kirby->getHitbox())) {
-                    kirby->takeDamage();
+                    QRectF breathBox = hh->getBreathBox();
+                    if (breathBox.intersects(kirby->getHitbox())) {
+                        kirby->takeDamage();
+                    }
                 }
             }
+
         }
         if (e->type == ENEMY_KNIGHT) {
             cutKnight *ck = dynamic_cast<cutKnight*>(e);
