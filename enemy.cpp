@@ -482,7 +482,6 @@ WaddleDoo::WaddleDoo(double sx, double sy, double pMinX, double pMaxX)
     grantedAbility = ABILITY_NONE;
     vx = ENEMY_SPEED;
     beaming = false;
-    sweepStep = 0;
     attackCooldown = 180;
 
     spr_stop_R = loadAndScale(":/Dataset/Waddle Doo/stop_R.png")
@@ -501,16 +500,19 @@ WaddleDoo::WaddleDoo(double sx, double sy, double pMinX, double pMaxX)
         attackL.append(loadAndScale(QString(":/Dataset/Waddle Doo/attack_L_%1.png").arg(i))
                        .scaled(WD_W, WD_H, Qt::KeepAspectRatio, Qt::FastTransformation));
     }
-    spr_beam1 = loadAndScale(":/Dataset/Waddle Doo/Beam1.png")
-                .scaled(BEAM_S, BEAM_S, Qt::KeepAspectRatio, Qt::FastTransformation);
-    spr_beam2 = loadAndScale(":/Dataset/Waddle Doo/Beam2.png")
-                .scaled(BEAM_S, BEAM_S, Qt::KeepAspectRatio, Qt::FastTransformation);
-    // 建立 3 顆光束子物件
-    for (int i = 0; i < 3; i++) {
-        beams[i] = new QGraphicsPixmapItem(this);
-        beams[i]->setVisible(false);
-        beams[i]->setZValue(6);
+    // 載入光束掃擊圖片（4 幀，左右各一組）
+
+    for (int i = 1; i <= 4; i++) {
+        beamR.append(loadAndScale(QString(":/Dataset/Waddle Doo/beams%1R.png").arg(i))
+                     .scaled(BEAM_W, BEAM_H, Qt::KeepAspectRatio, Qt::FastTransformation));
+        beamL.append(loadAndScale(QString(":/Dataset/Waddle Doo/beams%1.png").arg(i))
+                     .scaled(BEAM_W, BEAM_H, Qt::KeepAspectRatio, Qt::FastTransformation));
     }
+    // 建立單一光束特效子物件
+    beamEffect = new QGraphicsPixmapItem(this);
+    beamEffect->setVisible(false);
+    beamEffect->setZValue(6);
+
     setPixmap(spr_stop_R);
 }
 void WaddleDoo::updateEnemy() {
@@ -518,11 +520,8 @@ void WaddleDoo::updateEnemy() {
     beaming = false;
     if (isAttacking) {
         attackTimer--;
-        double bw = spr_beam1.width();
-        double bh = spr_beam1.height();
-        double cx = pixmap().width() / 2.0 - bw / 2.0;  // 本體中心 X
         if (attackTimer > 30) {
-            // === 階段 1：播攻擊動畫（40→31，共 10 幀播 3 張圖）===
+            // === 階段 1：播攻擊動畫（45→31）===
             animTimer++;
             if (animTimer >= 4) {
                 animTimer = 0;
@@ -530,54 +529,39 @@ void WaddleDoo::updateEnemy() {
                 if (animFrame >= 3) animFrame = 2;
             }
             setPixmap(facingRight ? attackR[animFrame] : attackL[animFrame]);
-            for (int i = 0; i < 3; i++) beams[i]->setVisible(false);
+            beamEffect->setVisible(false);
         } else {
-            // === 階段 2：光束掃擊（30→0）===
+            // === 階段 2：光束掃擊（30→0，用 beams1~4 播 4 幀）===
             beaming = true;
             setPixmap(facingRight ? attackR[2] : attackL[2]);
-            // 光束閃爍動畫
-            animTimer++;
-            if (animTimer >= 4) {
-                animTimer = 0;
-                animFrame = 1 - animFrame;
+
+            // 根據剩餘時間決定播第幾張（30→0 分成 4 段）
+            int frame;
+            if (attackTimer > 22)      frame = 0;  // beams1
+            else if (attackTimer > 15) frame = 1;  // beams2
+            else if (attackTimer > 7)  frame = 2;  // beams3
+            else                       frame = 3;  // beams4
+
+            QPixmap beamPix = facingRight ? beamR[frame] : beamL[frame];
+            beamEffect->setPixmap(beamPix);
+
+            // 錨點：光束從本體的這個位置射出（相對於本體左上角）
+            double anchorX = pixmap().width() * 0.5;   // 本體中心
+            double anchorY = pixmap().height() * 0.3+50;   // 眼睛高度
+
+            // 面朝右：光束往右上延伸 → 左下角對齊錨點
+            // 面朝左：光束往左上延伸 → 右下角對齊錨點
+            if (facingRight) {
+                beamEffect->setPos(anchorX, anchorY - beamPix.height());
+            } else {
+                beamEffect->setPos(anchorX - beamPix.width(), anchorY - beamPix.height());
             }
-            QPixmap beamPix = (animFrame == 0) ? spr_beam1 : spr_beam2;
-            for (int i = 0; i < 3; i++) beams[i]->setPixmap(beamPix);
-            // 計算掃擊階段（30→0 分成 4 步，每步約 7~8 幀）
-            if (attackTimer > 28)      sweepStep = 0;  // 正上方
-            else if (attackTimer > 21) sweepStep = 1;  // 斜上方
-            else if (attackTimer > 14) sweepStep = 2;  // 斜前方
-            else if (attackTimer > 7)  sweepStep = 3;
-            else                       sweepStep = 4;  // 正前方
-            // 設定 3 顆光束的位置（相對於本體）
-            double dir = facingRight ? 1.0 : -1.0;
-            double offsets[5][3][2] = {
-                // step 0: 正上方
-                { {cx, -3*bh+20}, {cx, -2*bh+20}, {cx, -1*bh+20} },
-                // step 1: 斜上方
-                { {cx + dir*bw*0.8, -2.5*bh+20}, {cx + dir*bw*0.4, -1.7*bh+20}, {cx, -0.8*bh+20} },
-                // step 2: 斜前方
-                { {cx + dir*bw*1.5, -1.5*bh+20}, {cx + dir*bw*0.8, -0.8*bh+20}, {cx + dir*bw*0.2, -0.1*bh+20} },
-                // step 3: 正前方
-                { {cx + dir*bw*2.2, 0+20}, {cx + dir*bw*1.2, 0+20}, {cx + dir*bw*0.2, 0+20} },
-                // step 4: 斜下方 45° ← 新增
-                { {cx + dir*bw*1.5, 1.5*bh+20}, {cx + dir*bw*0.8, 0.8*bh+20}, {cx + dir*bw*0.2, 0.1*bh+20} }
-            };
-            // 面朝左時，調整 X 讓光束出現在左邊
-            for (int i = 0; i < 3; i++) {
-                double bx = offsets[sweepStep][i][0];
-                double by = offsets[sweepStep][i][1];
-                if (!facingRight) {
-                    bx = bx - bw * 0.5;
-                }
-                beams[i]->setPos(bx, by);
-                beams[i]->setVisible(true);
-            }
+            beamEffect->setVisible(true);
         }
         if (attackTimer <= 0) {
             isAttacking = false;
             vx = facingRight ? ENEMY_SPEED : -ENEMY_SPEED;
-            for (int i = 0; i < 3; i++) beams[i]->setVisible(false);
+            beamEffect->setVisible(false);
         }
         return;
     }
@@ -607,21 +591,11 @@ bool WaddleDoo::isBeaming() const {
     return beaming;
 }
 QRectF WaddleDoo::getBeamBox() const {
-    if (!beaming) return QRectF();
-    double bw = spr_beam1.width();
-    double bh = spr_beam1.height();
-    // 用所有可見光束的位置算出一個大範圍的 hitbox
-    double minX = x(), minY = y(), maxX = x(), maxY = y();
-    for (int i = 0; i < 3; i++) {
-        if (beams[i]->isVisible()) {
-            // beams[i]->pos() 是相對座標，要加上本體位置
-            double bx = x() + beams[i]->pos().x();
-            double by = y() + beams[i]->pos().y();
-            if (bx < minX) minX = bx;
-            if (by < minY) minY = by;
-            if (bx + bw > maxX) maxX = bx + bw;
-            if (by + bh > maxY) maxY = by + bh;
-        }
-    }
-    return QRectF(minX, minY, maxX - minX, maxY - minY);
+    if (!beaming || !beamEffect->isVisible()) return QRectF();
+    // hitbox 就是光束圖片的範圍
+    double bx = x() + beamEffect->pos().x();
+    double by = y() + beamEffect->pos().y();
+    double bw = beamEffect->pixmap().width();
+    double bh = beamEffect->pixmap().height();
+    return QRectF(bx, by, bw, bh);
 }

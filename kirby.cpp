@@ -291,29 +291,25 @@ void Kirby::handleInput(const QSet<int> &keys) {
 
     // === 跳躍 / 飛行 ===
     if (keys.contains(Qt::Key_Up)) {
-        // 只有「前一次已經放開按鍵」才能觸發跳躍或開始飛行（防連發）
-        if (upKeyReleased) {
+        if (state == KIRBY_HOVERING) {
+            // 飛行中：按住就持續給向上推力
+            vy = KIRBY_HOVER_FORCE;
+        } else if (upKeyReleased) {
+            // 只有「前一次已經放開按鍵」才能觸發跳躍或開始飛行（防連發）
             if (onGround && state != KIRBY_HOVERING) {
                 // 第一次按：從地面起跳
                 vy = KIRBY_JUMP_FORCE;
                 onGround = false;
                 state = KIRBY_JUMPING;
-                upKeyReleased = false; // 鎖上按鍵，直到玩家放開
+                upKeyReleased = false;
             } else if (!onGround && state == KIRBY_JUMPING) {
                 // 空中「再按一次」：進入飛行
                 state = KIRBY_HOVERING;
-                vy = KIRBY_HOVER_FORCE;
-                upKeyReleased = false; // 鎖上按鍵
-            } else if (state == KIRBY_HOVERING) {
-                // (可選) 如果你想讓卡比像原作一樣「連按」才能越飛越高
-                // 把給予向上推力的程式碼放在這裡，且一樣鎖上按鍵
                 vy = KIRBY_HOVER_FORCE;
                 upKeyReleased = false;
             }
         }
     } else {
-        // 如果這個 Frame 電腦發現玩家沒有按 Up 鍵，就把鎖解開！
-        // 這樣玩家下一次按 Up 鍵時，就能順利通過 `if (upKeyReleased)` 的檢查。
         upKeyReleased = true;
     }
 

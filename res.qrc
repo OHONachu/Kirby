@@ -204,5 +204,13 @@
         <file>Dataset/Kirby_beam/Kirby_doo_run(3)_L.png</file>
         <file>Dataset/Kirby_beam/Kirby_doo_run(4)_L.png</file>
         <file>Dataset/Kirby_beam/beamboard.png</file>
+        <file>Dataset/Waddle Doo/beams1.png</file>
+        <file>Dataset/Waddle Doo/beams1R.png</file>
+        <file>Dataset/Waddle Doo/beams2.png</file>
+        <file>Dataset/Waddle Doo/beams2R.png</file>
+        <file>Dataset/Waddle Doo/beams3.png</file>
+        <file>Dataset/Waddle Doo/beams3R.png</file>
+        <file>Dataset/Waddle Doo/beams4.png</file>
+        <file>Dataset/Waddle Doo/beams4R.png</file>
     </qresource>
 </RCC>
