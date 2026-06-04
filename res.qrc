@@ -212,5 +212,7 @@
         <file>Dataset/Waddle Doo/beams3R.png</file>
         <file>Dataset/Waddle Doo/beams4.png</file>
         <file>Dataset/Waddle Doo/beams4R.png</file>
+        <file>Dataset/background/stage3(4).png</file>
+        <file>Dataset/background/stage4(4).png</file>
     </qresource>
 </RCC>
