@@ -678,6 +678,10 @@ void GameScene::updateHUD() {
         abilityIcon->setPixmap(cutterBoard);
         abilityIcon->setPos(boardX, boardY);
         abilityIcon->setVisible(true);
+    } else if (kirby->ability == ABILITY_BEAM){
+        abilityIcon->setPixmap(BeamBoard);
+        abilityIcon->setPos(boardX, boardY);
+        abilityIcon->setVisible(true);
     } else {
         abilityIcon->setVisible(false);
     }
