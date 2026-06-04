@@ -465,6 +465,7 @@ void cutKnight::updateEnemy() {
     // 動畫
 
 }
+
 void cutKnight::setTargetX(double kirbyX) {
     targetX = kirbyX;
 }

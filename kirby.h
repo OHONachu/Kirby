@@ -28,6 +28,11 @@ public:
     // 攻擊
     int attackTimer;
     bool isAttacking;
+    QGraphicsPixmapItem* fireEffect;
+
+    QGraphicsPixmapItem* beams[3]; // 3 顆光束的特效物件
+    bool beaming;                  // 是否正在發射光束
+    int sweepStep;                 // 掃擊階段
 
     // 吸入/飽足
     bool mouthful;
@@ -84,7 +89,8 @@ private:
     QVector<QPixmap> spr_fire_walk_R, spr_fire_walk_L;
     QPixmap spr_fire_fly1_R, spr_fire_fly1_L, spr_fire_fly2_R, spr_fire_fly2_L;
     QPixmap spr_fire_down_R, spr_fire_down_L;
-    QVector<QPixmap> spr_fire_attack_R, spr_fire_attack_L;
+    QPixmap spr_fire_attack_R, spr_fire_attack_L;
+    QVector<QPixmap> spr_fire_fire_R, spr_fire_fire_L;
 
     // Spark ability
     QPixmap spr_spark_stand_R, spr_spark_stand_L;
@@ -106,6 +112,7 @@ private:
     QPixmap spr_doo_fly1_R, spr_doo_fly1_L, spr_doo_fly2_R, spr_doo_fly2_L;
     QPixmap spr_doo_down_R, spr_doo_down_L;
     QVector<QPixmap> spr_doo_attack_R, spr_doo_attack_L;
+    QPixmap  spr_doo_beam;
     // 星星彈
     QPixmap spr_star;
 

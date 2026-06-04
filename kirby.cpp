@@ -22,6 +22,14 @@ Kirby::Kirby() {
     loadSprites();
     setPixmap(spr_stand_R);
     setZValue(10); // Kirby 顯示在最上層
+    fireEffect = new QGraphicsPixmapItem(this);
+    fireEffect->setVisible(false);
+    beaming = false;
+    sweepStep = 0;
+    for (int i = 0; i < 3; i++) {
+        beams[i] = new QGraphicsPixmapItem(this);
+        beams[i]->setVisible(false);
+    }
 
     upKeyReleased = true;
     xKeyReleased = true;
@@ -100,10 +108,11 @@ void Kirby::loadSprites() {
 
     spr_fire_down_R = loadAndScale(fireBase + "kirbyfire_down_R.png").scaled(targetSizespr_down_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
     spr_fire_down_L = loadAndScale(fireBase + "kirbyfire_down_L.png").scaled(targetSizespr_down_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
-
+    spr_fire_attack_R = loadAndScale(fireBase + "kirbyfire_attack_R.png").scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_fire_attack_L = loadAndScale(fireBase + "kirbyfire_attack_L.png").scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
     for (int i = 1; i <= 3; i++) {
-        spr_fire_attack_R.append(loadAndScale(fireBase + QString("kirbyfire_fire(%1)_R.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
-        spr_fire_attack_L.append(loadAndScale(fireBase + QString("kirbyfire_fire(%1)_L.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
+        spr_fire_fire_R.append(loadAndScale(fireBase + QString("kirbyfire_fire(%1)_R.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
+        spr_fire_fire_L.append(loadAndScale(fireBase + QString("kirbyfire_fire(%1)_L.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
     }
 
     // ====== Spark Ability Sprites ======
@@ -151,7 +160,7 @@ void Kirby::loadSprites() {
         spr_cutter_attack_L.append(loadAndScale(cutterBase + QString("Kirby_cutter_attack(%1)_L.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
     }
     // ====== Doo Ability Sprites ======
-    QString dooBase = ":/Dataset/Kirby_doo/";
+    QString dooBase = ":/Dataset/Kirby_beam/";
     spr_doo_stand_R = loadAndScale(dooBase + "Kirby_doo_stop_R.png").scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
     spr_doo_stand_L = loadAndScale(dooBase + "Kirby_doo_stop_L.png").scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
@@ -172,6 +181,8 @@ void Kirby::loadSprites() {
         spr_doo_attack_R.append(loadAndScale(dooBase + QString("Kirby_doo_attack(%1)_R.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
         spr_doo_attack_L.append(loadAndScale(dooBase + QString("Kirby_doo_attack(%1)_L.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
     }
+    spr_doo_beam = loadAndScale(dooBase + "beam.png").scaled(targetSizespr_walk_R*0.25, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+
 }
 
 // ============ 主更新 (每幀呼叫) ============
@@ -193,9 +204,11 @@ void Kirby::update(const QSet<int> &keys) {
     // 處理攻擊計時
     if (isAttacking) {
         attackTimer--;
+        animTimer++;
         if (attackTimer <= 0) {
             isAttacking = false;
             state = KIRBY_NORMAL;
+            fireEffect->setVisible(false);
         }
     }
 
@@ -364,6 +377,7 @@ void Kirby::updateAnimation() {
         animTimer = 0;
         animFrame++;
 
+
         // 【新增】：如果是在空中播放吸氣(吐氣)動畫，停留 3 個影格的時間後強制掉落
         if (state == KIRBY_INHALING && !onGround && animFrame >= 3) {
             state = KIRBY_JUMPING; // 自動轉為跳躍(下落)狀態
@@ -377,12 +391,35 @@ void Kirby::updateAnimation() {
 void Kirby::updateSprite() {
     double oldHeight = pixmap().isNull() ? 0 : pixmap().height();
     QPixmap current;
+    // === 確保非 Beam 攻擊狀態時隱藏光束 ===
+    if (!isAttacking || ability != ABILITY_BEAM) {
+        for (int i = 0; i < 3; i++) {
+            if (beams[i]) beams[i]->setVisible(false);
+        }
+        beaming = false;
+    }
     // 根據能力狀態選擇 sprite set
     if (ability == ABILITY_FIRE) {
         // === Fire Ability Sprites ===
         if (isAttacking) {
-            int idx = animFrame % spr_fire_attack_R.size();
-            current = facingRight ? spr_fire_attack_R[idx] : spr_fire_attack_L[idx];
+            // 1. 卡比本身的動作：保持噴火姿勢
+            current = facingRight ? spr_fire_attack_R : spr_fire_attack_L;
+
+            // 2. 火焰特效動畫處理 (套用 HotHead 的 6 幀切換邏輯)
+            // spr_fire_fire_R 有 3 張圖片[cite: 1]，利用 animTimer 來控制切換速度
+            int fireFrameIdx = (animTimer / 6) % spr_fire_fire_R.size();
+            fireEffect->setPixmap(facingRight ? spr_fire_fire_R[fireFrameIdx] : spr_fire_fire_L[fireFrameIdx]);
+
+            // 3. 火焰特效位置校正
+            if (facingRight) {
+                // 往右噴：特效放在卡比圖片右側
+                fireEffect->setPos(pixmap().width(), 0);
+            } else {
+                // 往左噴：特效放在卡比圖片左側
+                fireEffect->setPos(-fireEffect->pixmap().width(), 0);
+            }
+            fireEffect->setVisible(true);
+
         } else if (state == KIRBY_HOVERING) {
             current = (animFrame % 2 == 0)
                     ? (facingRight ? spr_fire_fly1_R : spr_fire_fly1_L)
@@ -430,10 +467,57 @@ void Kirby::updateSprite() {
             current = facingRight ? spr_cutter_stand_R : spr_cutter_stand_L;
         }
     } else if(ability == ABILITY_BEAM){
-        // === CUTTER Ability Sprites ===
+        // === BEAM Ability Sprites ===
         if (isAttacking) {
-            int idx = animFrame % spr_doo_attack_R.size();
-            current = facingRight ? spr_doo_attack_R[idx] : spr_doo_attack_L[idx];
+            if (attackTimer > 30) {
+                // === 階段 1：播攻擊動畫（40→31，共 10 幀）===
+                // 每 4 幀切換一張圖，最多到第 3 張圖 (index 2)
+                int frame = (animTimer / 5);
+                if (frame > 1) frame = 1;
+                current = facingRight ? spr_doo_attack_R[frame] : spr_doo_attack_L[frame];
+
+                for (int i = 0; i < 3; i++) beams[i]->setVisible(false);
+                beaming = false;
+            } else {
+                // === 階段 2：光束掃擊（30→0）===
+                beaming = true;
+                current = facingRight ? spr_doo_attack_R[1] : spr_doo_attack_L[1];
+                QPixmap beamPix = spr_doo_beam;
+
+                // 計算掃擊階段
+                if (attackTimer > 28)      sweepStep = 0;  // 正上方
+                else if (attackTimer > 21) sweepStep = 1;  // 斜上方
+                else if (attackTimer > 14) sweepStep = 2;  // 斜前方
+                else if (attackTimer > 7)  sweepStep = 3;  // 正前方
+                else                       sweepStep = 4;  // 斜下方 45°
+
+                // 取得卡比中心點與光束尺寸，以便排版
+                double cx = pixmap().width() / 2.0;
+                double bw = beamPix.width();
+                double bh = beamPix.height();
+                double dir = facingRight ? 1.0 : -1.0;
+
+                // WaddleDoo 的偏移量矩陣
+                double offsets[5][3][2] = {
+                    { {cx, -3*bh+20}, {cx, -2*bh+20}, {cx, -1*bh+20} },
+                    { {cx + dir*bw*0.8, -2.5*bh+20}, {cx + dir*bw*0.4, -1.7*bh+20}, {cx, -0.8*bh+20} },
+                    { {cx + dir*bw*1.5, -1.5*bh+20}, {cx + dir*bw*0.8, -0.8*bh+20}, {cx + dir*bw*0.2, -0.1*bh+20} },
+                    { {cx + dir*bw*2.2, 0+20}, {cx + dir*bw*1.2, 0+20}, {cx + dir*bw*0.2, 0+20} },
+                    { {cx + dir*bw*1.5, 1.5*bh+20}, {cx + dir*bw*0.8, 0.8*bh+20}, {cx + dir*bw*0.2, 0.1*bh+20} }
+                };
+
+                // 設定光束位置與顯示
+                for (int i = 0; i < 3; i++) {
+                    beams[i]->setPixmap(beamPix);
+                    double bx = offsets[sweepStep][i][0];
+                    double by = offsets[sweepStep][i][1];
+                    if (!facingRight) {
+                        bx = bx - bw * 0.5; // 面朝左的校正
+                    }
+                    beams[i]->setPos(bx, by);
+                    beams[i]->setVisible(true);
+                }
+            }
         } else if (state == KIRBY_HOVERING) {
             current = (animFrame % 2 == 0)
                     ? (facingRight ? spr_doo_fly1_R : spr_doo_fly1_L)
@@ -523,7 +607,7 @@ void Kirby::doSwallow() {
     } else if (swallowedEnemy == ENEMY_KNIGHT) {
         ability = ABILITY_CUTTER;
     } else if(swallowedEnemy == ENEMY_WADDLE_DOO){
-        ability == ABILITY_BEAM;
+        ability = ABILITY_BEAM;
     }
     // Waddle Dee 等無能力敵人 → 回 Normal
 
@@ -552,7 +636,11 @@ void Kirby::startAbilityAttack() {
     } else if (ability == ABILITY_CUTTER) {
         attackTimer = CUTTER_DURATION;
     }else if (ability == ABILITY_BEAM) {
-        attackTimer = BEAM_DURATION;
+        attackTimer = 40; // 配合 WaddleDoo 的 40 幀設定
+        animFrame = 0;
+        animTimer = 0;
+        beaming = false;
+
     }
 
     animFrame = 0;
@@ -665,17 +753,55 @@ QRectF Kirby::getAttackBox() const {
             return QRectF(x() - aw, ay, aw, ah);
         }
     } else if (ability == ABILITY_BEAM) {
-        // Beam: 從上到下的鞭狀弧形攻擊範圍
-        double aw = 130; // 寬度適中
-        double ah = pixmap().height() * 1.5; // 碰撞箱比卡比還要高，以涵蓋從頭頂揮下來的弧度
-        double ay = y() - pixmap().height() * 0.25; // 起點從卡比頭部上方開始
-
-        // 光束鞭打時通常會稍微貼近卡比本身，所以 X 軸做了一點向內縮的偏移重疊
-        if (facingRight) {
-            return QRectF(x() + pixmap().width() * 0.3, ay, aw, ah);
-        } else {
-            return QRectF(x() - aw + pixmap().width() * 0.7, ay, aw, ah);
+        // === 階段 1：如果還在舉起手（未發射光束），沒有攻擊判定 ===
+        if (!beaming) {
+            return QRectF();
         }
+
+        // === 階段 2：根據光束的揮動階段 (sweepStep) 動態產生碰撞箱 ===
+        double kw = pixmap().width();
+        double kh = pixmap().height();
+        double bx = x();
+        double by = y();
+        double aw = kw * 1.5; // 預設碰撞箱寬度
+        double ah = kh * 1.5; // 預設碰撞箱高度
+
+        // 依照 0~4 的階段，調整碰撞箱的位置與大小
+        switch (sweepStep) {
+        case 0: // 正上方 (剛揮出)
+            bx = x() + (facingRight ? 0 : -kw * 0.5);
+            by = y() - kh * 1.2;
+            aw = kw * 1.5;
+            ah = kh * 1.5;
+            break;
+        case 1: // 斜上方
+            bx = x() + (facingRight ? kw * 0.5 : -kw * 1.5);
+            by = y() - kh * 0.8;
+            aw = kw * 1.5;
+            ah = kh * 1.5;
+            break;
+        case 2: // 斜前方
+            bx = x() + (facingRight ? kw * 0.8 : -kw * 1.8);
+            by = y() - kh * 0.2;
+            aw = kw * 1.8;
+            ah = kh * 1.2;
+            break;
+        case 3: // 正前方 (最長)
+            bx = x() + (facingRight ? kw : -kw * 2.2);
+            by = y() + kh * 0.2;
+            aw = kw * 2.2;
+            ah = kh * 0.8; // 正前方時，碰撞箱較扁長
+            break;
+        case 4: // 斜下方 45° (收尾)
+            bx = x() + (facingRight ? kw * 0.5 : -kw * 1.5);
+            by = y() + kh * 0.5;
+            aw = kw * 1.8;
+            ah = kh * 1.2;
+            break;
+        default:
+            return QRectF();
+        }
+        return QRectF(bx, by, aw, ah);
     }
     return QRectF();
 }

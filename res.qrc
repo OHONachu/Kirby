@@ -200,5 +200,9 @@
         <file>Dataset/Kirby_cutter/Kirby_cutter_stop_R.png</file>
         <file>Dataset/Kirby_normal/Kirby_mouth_R.png</file>
         <file>Dataset/Kirby_normal/Kirby_mouth_L.png</file>
+        <file>Dataset/Kirby_beam/beam.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_run(3)_L.png</file>
+        <file>Dataset/Kirby_beam/Kirby_doo_run(4)_L.png</file>
+        <file>Dataset/Kirby_beam/beamboard.png</file>
     </qresource>
 </RCC>
