@@ -125,9 +125,8 @@ private:
     QPixmap spr_stop_R, spr_stop_L;
     QVector<QPixmap> walkR, walkL;
     QVector<QPixmap> attackR, attackL;
-    QPixmap spr_beam1, spr_beam2;
-    QGraphicsPixmapItem *beams[3];    // 3 顆光束
+    QVector<QPixmap> beamR, beamL;     // beams1~4 左右各 4 張
+    QGraphicsPixmapItem *beamEffect;   // 單一光束特效物件
     bool beaming;
-    int sweepStep;                     // 掃擊階段 0~3
 };
 #endif // ENEMY_H

@@ -16,9 +16,10 @@ const int CK_W = 150;
 const int CK_H = 150;
 const int CKW_W = 150;  // 回力鏢小一點
 const int CKW_H = 150;
-const int WD_W = 160;
-const int WD_H = 160;
-const int BEAM_S = 80;
+const int WD_W = 150;
+const int WD_H = 150;
+const int BEAM_W = 230;
+const int BEAM_H = 230;
 
 
 // ============ 物理參數 ============

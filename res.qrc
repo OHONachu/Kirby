@@ -200,5 +200,13 @@
         <file>Dataset/Kirby_cutter/Kirby_cutter_stop_R.png</file>
         <file>Dataset/Kirby_normal/Kirby_mouth_R.png</file>
         <file>Dataset/Kirby_normal/Kirby_mouth_L.png</file>
+        <file>Dataset/Waddle Doo/beams1.png</file>
+        <file>Dataset/Waddle Doo/beams1R.png</file>
+        <file>Dataset/Waddle Doo/beams2.png</file>
+        <file>Dataset/Waddle Doo/beams2R.png</file>
+        <file>Dataset/Waddle Doo/beams3.png</file>
+        <file>Dataset/Waddle Doo/beams3R.png</file>
+        <file>Dataset/Waddle Doo/beams4.png</file>
+        <file>Dataset/Waddle Doo/beams4R.png</file>
     </qresource>
 </RCC>
