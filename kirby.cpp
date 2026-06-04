@@ -92,6 +92,11 @@ void Kirby::loadSprites() {
     QSize targetSizespr_walk_R = spr_walk_R[1].size();
     QSize targetSizespr_fly1_R = spr_fly1_R.size();
     QSize targetSizespr_down_R = spr_down_R.size();
+    starEffect = new QGraphicsPixmapItem(this);
+    starEffect->setVisible(false);
+    starFlying = false;
+    starX = 0;
+    starY = 0;
     // ====== Fire Ability Sprites ======
     QString fireBase = ":/Dataset/Kirby_fire/";
     spr_fire_stand_R = loadAndScale(fireBase + "kirbyfire_stop_R.png").scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation);
@@ -187,7 +192,7 @@ void Kirby::loadSprites() {
         spr_doo_attack_R.append(loadAndScale(dooBase + QString("Kirby_doo_attack(%1)_R.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
         spr_doo_attack_L.append(loadAndScale(dooBase + QString("Kirby_doo_attack(%1)_L.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
     }
-    spr_doo_beam = loadAndScale(dooBase + "beam.png").scaled(targetSizespr_walk_R*0.25, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    spr_doo_beam = loadAndScale(dooBase + "beam.png").scaled(targetSizespr_walk_R*0.5, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
 }
 
@@ -215,6 +220,8 @@ void Kirby::update(const QSet<int> &keys) {
             isAttacking = false;
             state = KIRBY_NORMAL;
             fireEffect->setVisible(false);
+            starFlying = false;
+            starEffect->setVisible(false);
         }
     }
 
@@ -399,6 +406,31 @@ void Kirby::updateSprite() {
             if (beams[i]) beams[i]->setVisible(false);
         }
         beaming = false;
+    }
+    if (!starFlying) {
+        starEffect->setVisible(false);
+    }
+
+    // === 處理普通狀態下的吐星星攻擊 ===
+    if (ability == ABILITY_NONE && isAttacking && starFlying) {
+        // 卡比本體顯示吐氣的動作 (借用 inhale 的圖片)
+        current = facingRight ? spr_inhale_R : spr_inhale_L;
+
+        // --- 星星彈軌跡計算 (總共飛 250px) ---
+        double maxDist = 250.0;
+
+        // 攻擊倒數 15 -> 0，算出進度比例 (0.0 到 1.0)
+        double progress = 1.0 - ((double)attackTimer / 15.0);
+        double currentDist = maxDist * progress;
+
+        // 計算星星相對位置
+        starX = facingRight ? pixmap().width() + currentDist
+                            : -starEffect->pixmap().width() - currentDist;
+        starY = pixmap().height() * -0.25; // 放在嘴巴的高度
+
+        starEffect->setPos(starX, starY);
+        starEffect->setPixmap(spr_star);
+        starEffect->setVisible(true);
     }
     // 根據能力狀態選擇 sprite set
     if (ability == ABILITY_FIRE) {
@@ -619,10 +651,18 @@ void Kirby::doSwallow() {
 
 // ============ 吐出星星彈（按 X）============
 void Kirby::doSpit() {
-    // 星星彈的建立由 GameScene 處理
     // 這裡只負責狀態轉換
     mouthful = false;
-    state = KIRBY_NORMAL;
+    // 進入攻擊狀態來處理星星飛行
+    isAttacking = true;
+    state = KIRBY_ATTACKING;
+    attackTimer = 15; // 讓星星飛 15 幀 (約 0.25 秒)
+    starFlying = true;
+
+    // 重置動畫，借用 inhale (吸氣/吐氣) 的圖片來當作吐出動作
+    animFrame = 0;
+    animTimer = 0;
+    vx = 0;
 }
 
 // ============ 能力攻擊 ============
@@ -730,6 +770,14 @@ QRectF Kirby::getInhaleBox() const {
 }
 
 QRectF Kirby::getAttackBox() const {
+    // === 處理星星彈碰撞箱 ===
+    if (starFlying) {
+        double sw = starEffect->pixmap().width();
+        double sh = starEffect->pixmap().height();
+        if (sw == 0) { sw = 30; sh = 30; } // 防呆
+
+        return QRectF(x() + starX, y() + starY, sw, sh);
+    }
     if (ability == ABILITY_FIRE) {
         // Fire: 前方噴火範圍
         double aw = 200;

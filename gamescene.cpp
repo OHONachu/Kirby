@@ -709,7 +709,7 @@ void GameScene::updateKirby(const QSet<int> &keys) {
 
     kirby->update(keys);
 
-    // 偵測 Kirby 吐出星星彈
+    /*
     if (wasMouthful && !kirby->mouthful && kirby->state == KIRBY_NORMAL
         && keys.contains(Qt::Key_X)) {
         // 生成星星彈
@@ -722,6 +722,7 @@ void GameScene::updateKirby(const QSet<int> &keys) {
         addItem(star);
         projectiles.append(star);
     }
+    */
 
     // === Cutter Kirby: 發射飛鏢投射物 (和敵人 cutter knight 一樣的飛鏢) ===
     if (kirby->isAttacking && kirby->ability == ABILITY_CUTTER && !kirby->cutterFired) {

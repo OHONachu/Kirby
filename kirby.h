@@ -35,6 +35,9 @@ public:
     bool beaming;                  // 是否正在發射光束
     int sweepStep;                 // 掃擊階段
 
+    QGraphicsPixmapItem* starEffect; // 星星彈特效物件
+    bool starFlying;                 // 星星是否正在飛行
+    double starX, starY;             // 星星相對於卡比的 X, Y 座標
     // 吸入/飽足
     bool mouthful;
     EnemyType swallowedEnemy;
