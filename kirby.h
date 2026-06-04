@@ -28,6 +28,7 @@ public:
     // 攻擊
     int attackTimer;
     bool isAttacking;
+    bool cutterFired; // 標記本次攻擊是否已經發射飛鏢
     QGraphicsPixmapItem* fireEffect;
 
     QGraphicsPixmapItem* beams[3]; // 3 顆光束的特效物件
@@ -105,6 +106,8 @@ private:
     QPixmap spr_cutter_fly1_R, spr_cutter_fly1_L, spr_cutter_fly2_R, spr_cutter_fly2_L;
     QPixmap spr_cutter_down_R, spr_cutter_down_L;
     QVector<QPixmap> spr_cutter_attack_R, spr_cutter_attack_L;
+public:
+    QVector<QPixmap> cutterBoomerangFrames; // 飛鏢動畫幀（和敵人共用 ckw1~4）
 
     // Doo ability
     QPixmap spr_doo_stand_R, spr_doo_stand_L;

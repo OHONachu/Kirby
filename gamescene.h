@@ -82,7 +82,7 @@ private:
     QPixmap hpFullPix, hpEmptyPix;
     QGraphicsPixmapItem *lifeIconItem;
     QPixmap live0Pix, live1Pix, live2Pix; // 🌟 新增：生命狀態圖片
-    QPixmap fireBoard, sparkBoard, cutterBoard;
+    QPixmap fireBoard, sparkBoard, cutterBoard,BeamBoard;
 
     // 選單/結束畫面
     QGraphicsPixmapItem *menuBg;

@@ -42,7 +42,7 @@ GameScene::GameScene(Game *g) : QGraphicsScene(g), game(g) {
     fireBoard  = loadAndScale(":/Dataset/Kirby_fire/kirbyfire_board.png");
     sparkBoard = loadAndScale(":/Dataset/Kirby_spark/Kirby_spark_board.png");
     cutterBoard = loadAndScale(":/Dataset/Kirby_cutter/cs.png");
-
+    BeamBoard = loadAndScale(":/Dataset/Kirby_beam/beamboard.png");
 
     // Game Over 畫面 (對應你的新圖檔)
     gameOverContinuePix = loadPix(":/Dataset/background/gameover(1).png");
@@ -729,6 +729,22 @@ void GameScene::updateKirby(const QSet<int> &keys) {
         addItem(star);
         projectiles.append(star);
     }
+
+    // === Cutter Kirby: 發射飛鏢投射物 (和敵人 cutter knight 一樣的飛鏢) ===
+    if (kirby->isAttacking && kirby->ability == ABILITY_CUTTER && !kirby->cutterFired) {
+        kirby->cutterFired = true; // 標記已發射，避免重複生成
+        double cx = kirby->facingRight ? kirby->x() + kirby->pixmap().width()
+                                       : kirby->x() - kirby->cutterBoomerangFrames[0].width();
+        double cy = kirby->y() + kirby->pixmap().height() / 3.0;
+        double cvx = kirby->facingRight ? 6.0 : -6.0; // 與敵人飛鏢相同速度
+
+        Projectile *cutter = new Projectile(PROJ_CUTTER, cx, cy, cvx, 0,
+                                            true, kirby->cutterBoomerangFrames[0]);
+        // 設定動畫幀（和敵人 cutter knight 共用同一組）
+        cutter->animFrames = kirby->cutterBoomerangFrames;
+        addItem(cutter);
+        projectiles.append(cutter);
+    }
 }
 
 // ============ 更新敵人 ============
@@ -1042,12 +1058,14 @@ void GameScene::checkProjectileCollisions() {
         if (!p->active) continue;
         QRectF pb = p->getHitbox();
 
-        // 投射物 vs 磚頭
-        for (const Block &bl : blocks) {
-            if (pb.intersects(bl.rect)) {
-                p->active = false;
-                p->setVisible(false);
-                break;
+        // 投射物 vs 磚頭 (飛鏢迴力鏢不會被磚頭擋住)
+        if (p->type != PROJ_CUTTER) {
+            for (const Block &bl : blocks) {
+                if (pb.intersects(bl.rect)) {
+                    p->active = false;
+                    p->setVisible(false);
+                    break;
+                }
             }
         }
         if (!p->active) continue;
@@ -1058,9 +1076,12 @@ void GameScene::checkProjectileCollisions() {
                 if (!e->alive || !e->canBeDamaged) continue;
                 if (pb.intersects(e->getHitbox())) {
                     e->die();
-                    p->active = false;
-                    p->setVisible(false);
-                    break;
+                    // 飛鏢迴力鏢可以穿透敵人（不會被消滅），其他投射物碰到敵人就消失
+                    if (p->type != PROJ_CUTTER) {
+                        p->active = false;
+                        p->setVisible(false);
+                        break;
+                    }
                 }
             }
         } else {
@@ -1068,8 +1089,11 @@ void GameScene::checkProjectileCollisions() {
             QRectF kb = kirby->getHitbox();
             if (pb.intersects(kb)) {
                 kirby->takeDamage();
-                p->active = false;
-                p->setVisible(false);
+                // 敵人的飛鏢迴力鏢也可以穿透（碰到卡比後繼續飛）
+                if (p->type != PROJ_CUTTER) {
+                    p->active = false;
+                    p->setVisible(false);
+                }
             }
         }
     }

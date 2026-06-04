@@ -13,6 +13,7 @@ Kirby::Kirby() {
     isInvincible = false;
     attackTimer = 0;
     isAttacking = false;
+    cutterFired = false;
     mouthful = false;
     swallowedEnemy = ENEMY_WADDLE_DEE;
     inhaling = false;
@@ -158,6 +159,11 @@ void Kirby::loadSprites() {
     for (int i = 1; i <= 2; i++) {
         spr_cutter_attack_R.append(loadAndScale(cutterBase + QString("Kirby_cutter_attack(%1)_R.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
         spr_cutter_attack_L.append(loadAndScale(cutterBase + QString("Kirby_cutter_attack(%1)_L.png").arg(i)).scaled(targetSizespr_stand_R, Qt::IgnoreAspectRatio, Qt::FastTransformation));
+    }
+    // 載入飛鏢 (boomerang) 動畫幀，與敵人 cutter knight 共用同一組圖片
+    for (int i = 1; i <= 4; i++) {
+        cutterBoomerangFrames.append(loadAndScale(QString(":/Dataset/cutter knight/ckw%1.png").arg(i))
+            .scaled(CKW_W, CKW_H, Qt::KeepAspectRatio, Qt::FastTransformation));
     }
     // ====== Doo Ability Sprites ======
     QString dooBase = ":/Dataset/Kirby_beam/";
@@ -630,7 +636,8 @@ void Kirby::startAbilityAttack() {
     } else if (ability == ABILITY_SPARK) {
         attackTimer = SPARK_DURATION;
     } else if (ability == ABILITY_CUTTER) {
-        attackTimer = CUTTER_DURATION;
+        attackTimer = 24; // 攻擊動畫短暫播放，飛鏢交由投射物處理
+        cutterFired = false; // 重置發射旗標，確保本次攻擊會發射一次飛鏢
     }else if (ability == ABILITY_BEAM) {
         attackTimer = 40; // 配合 WaddleDoo 的 40 幀設定
         animFrame = 0;
@@ -692,6 +699,7 @@ void Kirby::reset(double rx, double ry, bool fullReset) {
     isInvincible = false;
     invincibleTimer = 0;
     isAttacking = false;
+    cutterFired = false;
     attackTimer = 0;
     mouthful = false;
     inhaling = false;
@@ -739,15 +747,8 @@ QRectF Kirby::getAttackBox() const {
                       pixmap().width() + expand * 2,
                       pixmap().height() + expand * 2);
     } else if (ability == ABILITY_CUTTER) {
-        // Cutter: 前方的彎刀揮砍或飛行範圍
-        double aw = 150; // 距離稍短於火焰 (假設為近戰或剛擲出的範圍)
-        double ah = pixmap().height() * 0.4; // 高度較扁，符合刀刃形狀
-        double ay = y() + pixmap().height() * 0.3; // 位於卡比的中間偏下位置
-        if (facingRight) {
-            return QRectF(x() + pixmap().width(), ay, aw, ah);
-        } else {
-            return QRectF(x() - aw, ay, aw, ah);
-        }
+        // Cutter: 傷害由飛鏢投射物 (PROJ_CUTTER) 處理，不使用近戰碰撞箱
+        return QRectF();
     } else if (ability == ABILITY_BEAM) {
         // === 階段 1：如果還在舉起手（未發射光束），沒有攻擊判定 ===
         if (!beaming) {
@@ -757,10 +758,10 @@ QRectF Kirby::getAttackBox() const {
         // === 階段 2：根據光束的揮動階段 (sweepStep) 動態產生碰撞箱 ===
         double kw = pixmap().width();
         double kh = pixmap().height();
-        double bx = x();
-        double by = y();
-        double aw = kw * 1.5; // 預設碰撞箱寬度
-        double ah = kh * 1.5; // 預設碰撞箱高度
+        double bx ;
+        double by ;
+        double aw ; // 預設碰撞箱寬度
+        double ah ; // 預設碰撞箱高度
 
         // 依照 0~4 的階段，調整碰撞箱的位置與大小
         switch (sweepStep) {
