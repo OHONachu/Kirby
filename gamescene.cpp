@@ -474,71 +474,55 @@ void GameScene::setupStage3() {
     }
 
     // === Frame 3-1: 雙重懸崖與空中刺球 ===
-    // 建立分段地板，中間留兩個洞 (Hole) 考驗跳躍
     addFloor(0, FLOOR_Y, 5);
-    addHole(5 * floorTileW, FLOOR_Y, 2 * floorTileW, 200); // 第一個洞
-
+    addHole(5 * floorTileW, FLOOR_Y, 2 * floorTileW, 200);
     addFloor(7 * floorTileW, FLOOR_Y, 6);
-    addHole(13 * floorTileW, FLOOR_Y, 2 * floorTileW, 200); // 第二個洞
-
+    addHole(13 * floorTileW, FLOOR_Y, 2 * floorTileW, 200);
     addFloor(15 * floorTileW, FLOOR_Y, tilesPerFrame - 15);
-
-    // 空中安全平台，幫助玩家安全越過陷阱
     addPlatform(400, FLOOR_Y - 260, 3);
     addPlatform(950, FLOOR_Y - 320, 2);
-
-    // 放一隻在平台上巡邏的 Waddle Dee 阻礙玩家
     addEnemy(ENEMY_WADDLE_DEE, 500, FLOOR_Y - 260, 400, 600);
-    // 空中漂浮無法被吸入的 Gordo 刺球
     addEnemy(ENEMY_GORDO, 1100, FLOOR_Y - 450, 0, 0);
 
-
-    // === Frame 3-2: 元素夾擊戰 + 補血番茄 ===
+    // === Frame 3-2（新增）: 平地過渡區 ===
     double f2x = FRAME_WIDTH;
-    addFloor(f2x, FLOOR_Y, tilesPerFrame); // 這一層是穩固的平地
+    addFloor(f2x, FLOOR_Y, tilesPerFrame);
+    addEnemy(ENEMY_WADDLE_DEE, f2x + 400, FLOOR_Y, f2x + 200, f2x + 600);
+    addEnemy(ENEMY_WADDLE_DEE, f2x + 900, FLOOR_Y, f2x + 750, f2x + 1100);
 
-    // 置中的金字塔型高台
-    addBlock(f2x + 400, FLOOR_Y - 214);
-    addPlatform(f2x + 500, FLOOR_Y - 350, 4);
-    addBlock(f2x + 950, FLOOR_Y - 214);
-
-    // 左右兩邊分別派出一隻 Hot Head (火) 與 Sparky (電) 夾擊玩家
-    addEnemy(ENEMY_KNIGHT, f2x + 250, FLOOR_Y, f2x + 100, f2x + 450);
-    addEnemy(ENEMY_SPARKY, f2x + 1100, FLOOR_Y, f2x + 900, f2x + 1300);
-
-    // 在高台中央放置一個補血大番茄 (Maxim Tomato)
-    // 已依照要求，將 Stage 3 的 Maxim Tomato 刪除，讓全遊戲只剩下一顆
-
-
-    // === Frame 3-3: 終點前哨衝刺 ===
+    // === Frame 3-3: 元素夾擊戰 ===
     double f3x = FRAME_WIDTH * 2;
     addFloor(f3x, FLOOR_Y, tilesPerFrame);
+    addBlock(f3x + 400, FLOOR_Y - 214);
+    addPlatform(f3x + 500, FLOOR_Y - 350, 4);
+    addBlock(f3x + 950, FLOOR_Y - 214);
+    addEnemy(ENEMY_KNIGHT, f3x + 250, FLOOR_Y, f3x + 100, f3x + 450);
+    addEnemy(ENEMY_SPARKY, f3x + 1100, FLOOR_Y, f3x + 900, f3x + 1300);
 
-    // 連續的階梯平台
-    addPlatform(f3x + 150, FLOOR_Y - 200, 2);
-    addPlatform(f3x + 400, FLOOR_Y - 320, 2);
-    addPlatform(f3x + 650, FLOOR_Y - 440, 2);
-
-    // 高空平台的防守敵人
-    addEnemy(ENEMY_WADDLE_DEE, f3x + 450, FLOOR_Y - 320, f3x + 400, f3x + 550);
-    // 地面上也有一隻 Hot Head 攔路
-    addEnemy(ENEMY_KNIGHT, f3x + 800, FLOOR_Y, f3x + 600, f3x + 1000);
+    // === Frame 3-4: 終點前哨衝刺 ===
+    double f4x = FRAME_WIDTH * 3;
+    addFloor(f4x, FLOOR_Y, tilesPerFrame);
+    addPlatform(f4x + 150, FLOOR_Y - 200, 2);
+    addPlatform(f4x + 400, FLOOR_Y - 320, 2);
+    addPlatform(f4x + 650, FLOOR_Y - 440, 2);
+    addEnemy(ENEMY_WADDLE_DEE, f4x + 450, FLOOR_Y - 320, f4x + 400, f4x + 550);
+    addEnemy(ENEMY_KNIGHT, f4x + 800, FLOOR_Y, f4x + 600, f4x + 1000);
 
     // 設置關卡終點門 (Goal Door)
     QPixmap goalPix = loadAndScale(":/Dataset/item/door.png");
     goalDoor = new QGraphicsPixmapItem(goalPix);
-    goalDoor->setPos(f3x + FRAME_WIDTH - 350, FLOOR_Y - goalPix.height());
+    goalDoor->setPos(f4x + FRAME_WIDTH - 350, FLOOR_Y - goalPix.height());
     goalDoor->setZValue(4);
     addItem(goalDoor);
     goalRect = QRectF(goalDoor->x(), goalDoor->y(), goalPix.width(), goalPix.height());
     hasGoal = true;
 }
-// ============ Stage 4 配置 (3 frames) ============
+// ============ Stage 4 配置 (4 frames) ============
 void GameScene::setupStage4() {
     double floorTileW = loadAndScale(":/Dataset/item/floor.png").width();
     int tilesPerFrame = (int)(FRAME_WIDTH / floorTileW) + 1;
     // === 載入 Stage 4 背景圖片 ===
-    for (int f = 0; f < 3; f++) {
+    for (int f = 0; f < STAGE4_FRAMES; f++) {
         QString imagePath = QString(":/Dataset/background/stage4(%1).png").arg(f + 1);
         QPixmap bgSky = loadPix(imagePath);
         bgSky = bgSky.scaledToWidth(1620, Qt::SmoothTransformation);
@@ -555,35 +539,40 @@ void GameScene::setupStage4() {
     addFloor(6 * floorTileW, FLOOR_Y, 2);
     addHole(8 * floorTileW, FLOOR_Y, 3 * floorTileW, 200);
     addFloor(11 * floorTileW, FLOOR_Y, tilesPerFrame - 11);
-    // 磚頭作為高空落腳點
     addBlock(5 * floorTileW, FLOOR_Y - 250);
     addBlock(9 * floorTileW, FLOOR_Y - 300);
-    // 在深淵處放置 Gordo 增加跳躍壓力
     addEnemy(ENEMY_GORDO, 5 * floorTileW, FLOOR_Y - 150, 0, 0);
     addEnemy(ENEMY_GORDO, 9 * floorTileW, FLOOR_Y - 450, 0, 0);
-    // === Frame 4-2: 元素夾擊戰 ===
+
+    // === Frame 4-2（新增）: 平地過渡區 ===
     double f2x = FRAME_WIDTH;
     addFloor(f2x, FLOOR_Y, tilesPerFrame);
-    addPlatform(f2x + 300, FLOOR_Y - 200, 3);
-    addPlatform(f2x + 800, FLOOR_Y - 350, 3);
-    addPlatform(f2x + 1300, FLOOR_Y - 200, 3);
-    // 安排熱氣頭與電擊怪
-    addEnemy(ENEMY_WADDLE_DOO, f2x + 400, FLOOR_Y, f2x + 200, f2x + 600);
-    addEnemy(ENEMY_SPARKY, f2x + 850, FLOOR_Y - 350, f2x + 800, f2x + 1000);
-    addEnemy(ENEMY_WADDLE_DOO, f2x + 1200, FLOOR_Y, f2x + 1100, f2x + 1400);
-    // === Frame 4-3: 通往勝利的防守線 ===
+    addEnemy(ENEMY_WADDLE_DEE, f2x + 400, FLOOR_Y, f2x + 200, f2x + 600);
+    addEnemy(ENEMY_WADDLE_DEE, f2x + 900, FLOOR_Y, f2x + 750, f2x + 1100);
+
+    // === Frame 4-3: 元素夾擊戰 ===
     double f3x = FRAME_WIDTH * 2;
     addFloor(f3x, FLOOR_Y, tilesPerFrame);
-    addPlatform(f3x + 200, FLOOR_Y - 250, 2);
-    addBlock(f3x + 500, FLOOR_Y - 300);
-    addPlatform(f3x + 700, FLOOR_Y - 350, 2);
-    addEnemy(ENEMY_WADDLE_DEE, f3x + 200, FLOOR_Y - 250, f3x + 150, f3x + 350);
-    addEnemy(ENEMY_WADDLE_DOO, f3x + 700, FLOOR_Y - 350, f3x + 650, f3x + 850);
-    addEnemy(ENEMY_WADDLE_DEE, f3x + 900, FLOOR_Y, f3x + 800, f3x + 1200);
+    addPlatform(f3x + 300, FLOOR_Y - 200, 3);
+    addPlatform(f3x + 800, FLOOR_Y - 350, 3);
+    addPlatform(f3x + 1300, FLOOR_Y - 200, 3);
+    addEnemy(ENEMY_WADDLE_DOO, f3x + 400, FLOOR_Y, f3x + 200, f3x + 600);
+    addEnemy(ENEMY_SPARKY, f3x + 850, FLOOR_Y - 350, f3x + 800, f3x + 1000);
+    addEnemy(ENEMY_WADDLE_DOO, f3x + 1200, FLOOR_Y, f3x + 1100, f3x + 1400);
+
+    // === Frame 4-4: 通往勝利的防守線 ===
+    double f4x = FRAME_WIDTH * 3;
+    addFloor(f4x, FLOOR_Y, tilesPerFrame);
+    addPlatform(f4x + 200, FLOOR_Y - 250, 2);
+    addBlock(f4x + 500, FLOOR_Y - 300);
+    addPlatform(f4x + 700, FLOOR_Y - 350, 2);
+    addEnemy(ENEMY_WADDLE_DEE, f4x + 200, FLOOR_Y - 250, f4x + 150, f4x + 350);
+    addEnemy(ENEMY_WADDLE_DOO, f4x + 700, FLOOR_Y - 350, f4x + 650, f4x + 850);
+    addEnemy(ENEMY_WADDLE_DEE, f4x + 900, FLOOR_Y, f4x + 800, f4x + 1200);
     // 設置關卡終點門 (Goal Door)
     QPixmap goalPix = loadAndScale(":/Dataset/item/goal_door.png");
     goalDoor = new QGraphicsPixmapItem(goalPix);
-    goalDoor->setPos(f3x + FRAME_WIDTH - 350, FLOOR_Y - goalPix.height());
+    goalDoor->setPos(f4x + FRAME_WIDTH - 350, FLOOR_Y - goalPix.height());
     goalDoor->setZValue(4);
     addItem(goalDoor);
     goalRect = QRectF(goalDoor->x(), goalDoor->y(), goalPix.width(), goalPix.height());
